@@ -25,16 +25,12 @@
             flex-direction: column;
             z-index: 10;
             overflow: hidden;
-            position: relative;
         }
-
-        /* ===== ЗАГОЛОВОК С КНОПКОЙ ===== */
         #sidebar-header {
-            padding: 16px 20px;
+            padding: 20px;
             background: #1a73e8;
             color: white;
             text-align: center;
-            position: relative;
         }
         #sidebar-header h2 {
             font-weight: 400;
@@ -44,34 +40,7 @@
             display: block;
             font-size: 12px;
             opacity: 0.8;
-            margin-top: 4px;
-        }
-
-        /* КНОПКА "🔧" — всегда видна */
-        #dev-toggle-btn {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.15);
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #dev-toggle-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-50%) scale(1.1);
-        }
-        #dev-toggle-btn:active {
-            transform: translateY(-50%) scale(0.9);
+            margin-top: 5px;
         }
 
         /* ===== ПАНЕЛЬ РАЗРАБОТЧИКА ===== */
@@ -126,62 +95,6 @@
         }
         .dev-locked:hover { transform: none !important; }
 
-        /* ===== МОДАЛКА ПАРОЛЯ ===== */
-        #passwordModal .modal-content {
-            max-width: 360px;
-        }
-        #passwordModal .modal-content h3 {
-            color: #e74c3c;
-            text-align: center;
-        }
-        #passwordModal .modal-content p {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-        #passwordModal input {
-            font-size: 20px;
-            letter-spacing: 6px;
-            text-align: center;
-            padding: 12px;
-            width: 100%;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-        }
-        #passwordModal input:focus {
-            border-color: #1a73e8;
-        }
-        .password-error {
-            color: #e74c3c;
-            font-size: 13px;
-            margin-top: 10px;
-            text-align: center;
-            display: none;
-        }
-        .password-error.show {
-            display: block;
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .modal-actions button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-cancel { background: #e9ecef; color: #333; }
-        .btn-cancel:hover { background: #dde0e3; }
-        .btn-unlock { background: #e74c3c; color: white; }
-        .btn-unlock:hover { background: #c0392b; }
-
-        /* ===== СПИСОК МЕСТ ===== */
         #places-list {
             flex: 1;
             overflow-y: auto;
@@ -252,6 +165,7 @@
             height: 100%;
         }
 
+        /* ===== КНОПКИ НА КАРТЕ ===== */
         #controls {
             position: absolute;
             bottom: 30px;
@@ -260,6 +174,40 @@
             flex-direction: column;
             gap: 10px;
             z-index: 100;
+        }
+
+        /* КНОПКА 🔧 — НАД КНОПКОЙ "Добавить место" */
+        #dev-toggle-btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: 0.2s;
+            color: white;
+            background: #2c3e50;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        #dev-toggle-btn:hover {
+            background: #1a252f;
+            transform: scale(1.05);
+        }
+        #dev-toggle-btn .badge {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #add-btn, #volzhsky-btn {
@@ -292,6 +240,7 @@
             transform: scale(1.05);
         }
 
+        /* ===== МОДАЛКИ ===== */
         .modal {
             display: none;
             position: fixed;
@@ -359,6 +308,34 @@
             display: inline-block;
             margin-bottom: 10px;
         }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-cancel { background: #e9ecef; color: #333; }
+        .btn-cancel:hover { background: #dde0e3; }
+        .btn-save { background: #1a73e8; color: white; }
+        .btn-save:hover { background: #1557b0; }
+        .btn-unlock { background: #e74c3c; color: white; }
+        .btn-unlock:hover { background: #c0392b; }
+
+        /* Модалка пароля */
+        #passwordModal .modal-content { max-width: 360px; }
+        #passwordModal .modal-content h3 { color: #e74c3c; text-align: center; }
+        #passwordModal .modal-content p { text-align: center; color: #666; font-size: 14px; margin-bottom: 16px; }
+        #passwordModal input { font-size: 20px; letter-spacing: 6px; text-align: center; padding: 12px; width: 100%; border: 2px solid #ddd; border-radius: 8px; outline: none; }
+        #passwordModal input:focus { border-color: #1a73e8; }
+        .password-error { color: #e74c3c; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+        .password-error.show { display: block; }
 
         @media (max-width: 768px) {
             body {
@@ -374,10 +351,15 @@
             #controls {
                 bottom: 20px;
                 left: 20px;
+                gap: 8px;
             }
-            #add-btn, #volzhsky-btn {
+            #add-btn, #volzhsky-btn, #dev-toggle-btn {
                 padding: 10px 18px;
                 font-size: 13px;
+            }
+            #dev-toggle-btn {
+                font-size: 16px;
+                padding: 8px 16px;
             }
             #dev-panel {
                 padding: 6px 10px;
@@ -387,26 +369,18 @@
                 font-size: 10px;
                 padding: 4px 8px;
             }
-            #dev-toggle-btn {
-                width: 30px;
-                height: 30px;
-                font-size: 13px;
-                right: 8px;
-            }
         }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
-        <!-- ===== ЗАГОЛОВОК С КНОПКОЙ 🔧 ===== -->
         <div id="sidebar-header">
             <h2>📍 Мои места</h2>
             <small>Кликни на метку, чтобы открыть карточку</small>
-            <button id="dev-toggle-btn" title="Панель разработчика">🔧</button>
         </div>
 
-        <!-- ===== ПАНЕЛЬ РАЗРАБОТЧИКА (скрыта по умолчанию) ===== -->
+        <!-- ===== ПАНЕЛЬ РАЗРАБОТЧИКА ===== -->
         <div id="dev-panel">
             <span class="dev-label">🔧 DEV</span>
             <button class="dev-delete-btn" id="dev-delete-btn">🗑️ Удалить</button>
@@ -421,6 +395,10 @@
     <div id="map-container">
         <div id="map"></div>
         <div id="controls">
+            <!-- ===== КНОПКА 🔧 НАД "Добавить место" ===== -->
+            <button id="dev-toggle-btn">
+                🔧 <span class="badge">DEV</span>
+            </button>
             <button id="add-btn">➕ Добавить место</button>
             <button id="volzhsky-btn">🏙️ Волжский</button>
         </div>
@@ -482,7 +460,7 @@
     <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/javascript"></script>
     <script>
         // ============================================================
-        // 🔑 ПАРОЛЬ РАЗРАБОТЧИКА (измени на свой)
+        // 🔑 ПАРОЛЬ РАЗРАБОТЧИКА
         // ============================================================
         const DEV_PASSWORD = 'MAMAS';
 
@@ -523,7 +501,7 @@
         let selectedForDelete = new Set();
         let isDevUnlocked = false;
 
-        // DOM-элементы
+        // DOM
         const placesListEl = document.getElementById('places-list');
         const modal = document.getElementById('placeModal');
         const editModal = document.getElementById('editModal');
@@ -543,7 +521,7 @@
         const editDescInput = document.getElementById('editPlaceDesc');
 
         // ============================================================
-        // ИНИЦИАЛИЗАЦИЯ КАРТЫ
+        // ИНИЦИАЛИЗАЦИЯ
         // ============================================================
         ymaps.ready(init);
         function init() {
@@ -577,10 +555,9 @@
                 reader.readAsDataURL(file);
             });
 
-            // ===== КНОПКА 🔧 — ОТКРЫВАЕТ МОДАЛКУ ПАРОЛЯ =====
+            // ===== КНОПКА 🔧 — ОТКРЫВАЕТ ПАРОЛЬ =====
             devToggleBtn.addEventListener('click', function() {
                 if (isDevUnlocked) {
-                    // Если уже разблокировано — просто скрываем/показываем панель
                     devPanel.classList.toggle('active');
                     if (!devPanel.classList.contains('active')) {
                         exitDeleteMode();
@@ -588,19 +565,15 @@
                         updateDevButtons();
                     }
                 } else {
-                    // Показываем модалку пароля
                     openPasswordModal();
                 }
             });
 
-            // Закрытие модалки пароля по Enter
             passwordInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    checkPassword();
-                }
+                if (e.key === 'Enter') checkPassword();
             });
 
-            // ===== ОСТАЛЬНЫЕ КНОПКИ =====
+            // ===== КНОПКИ ПАНЕЛИ =====
             document.getElementById('dev-close-btn').addEventListener('click', function() {
                 devPanel.classList.remove('active');
                 exitDeleteMode();
@@ -656,12 +629,9 @@
                 }
 
                 if (confirm(`⚠️ Удалить ВСЕ ${userCount} пользовательских мест?\n\nПостоянные места (${permanentCount} шт.) останутся.`)) {
-                    // Удаляем только НЕ постоянные
                     placesData = placesData.filter(p => p.permanent);
-                    
                     myMap.geoObjects.removeAll();
                     placesData.forEach(p => createPlacemark(p));
-                    
                     renderPlacesList();
                     saveToStorage();
                     alert('✅ Все пользовательские места удалены!');
@@ -701,7 +671,6 @@
             }
         }
 
-        // Закрытие модалки пароля по клику на фон
         passwordModal.addEventListener('click', function(e) {
             if (e.target === passwordModal) closePasswordModal();
         });
@@ -768,7 +737,7 @@
         }
 
         // ============================================================
-        // ФУНКЦИИ МОДАЛОК
+        // МОДАЛКИ
         // ============================================================
         function openModal() {
             placeNameInput.value = '';
@@ -792,7 +761,7 @@
         }
 
         // ============================================================
-        // СОХРАНЕНИЕ МЕСТА
+        // СОХРАНЕНИЕ
         // ============================================================
         function savePlace() {
             const name = placeNameInput.value.trim();
@@ -823,7 +792,7 @@
         }
 
         // ============================================================
-        // СОЗДАНИЕ МЕТКИ
+        // МЕТКИ
         // ============================================================
         function createPlacemark(place) {
             const placemark = new ymaps.Placemark(place.coords, {
@@ -849,7 +818,7 @@
         }
 
         // ============================================================
-        // ОТРИСОВКА СПИСКА
+        // СПИСОК
         // ============================================================
         function renderPlacesList() {
             placesListEl.innerHTML = '';
@@ -862,9 +831,7 @@
             sorted.forEach(place => {
                 const item = document.createElement('div');
                 item.className = 'place-item';
-                if (place.permanent) {
-                    item.style.borderLeftColor = '#27ae60';
-                }
+                if (place.permanent) item.style.borderLeftColor = '#27ae60';
 
                 if (deleteMode && !place.permanent && isDevUnlocked) {
                     item.classList.add('select-mode');
@@ -880,7 +847,6 @@
                     item.style.cursor = 'pointer';
                 }
 
-                // Если выбрано для удаления
                 if (selectedForDelete.has(place.id)) {
                     item.classList.add('selected-for-delete');
                 }
@@ -934,17 +900,13 @@
                 alert('Выбери места для удаления (кликни по ним).');
                 return;
             }
-
-            if (!confirm(`Удалить ${selectedForDelete.size} место(а)? Это действие нельзя отменить!`)) return;
+            if (!confirm(`Удалить ${selectedForDelete.size} место(а)?`)) return;
 
             const toRemove = new Set(selectedForDelete);
             selectedForDelete.clear();
-
             placesData = placesData.filter(p => !toRemove.has(p.id));
-
             myMap.geoObjects.removeAll();
             placesData.forEach(p => createPlacemark(p));
-
             renderPlacesList();
             saveToStorage();
             exitDeleteMode();
@@ -984,10 +946,8 @@
 
             place.name = name;
             place.description = desc || 'Без описания';
-
             myMap.geoObjects.remove(place._placemark);
             createPlacemark(place);
-
             renderPlacesList();
             saveToStorage();
             closeEditModal();
@@ -1002,7 +962,7 @@
         }
 
         // ============================================================
-        // СОХРАНЕНИЕ В localStorage
+        // LOCALSTORAGE
         // ============================================================
         function saveToStorage() {
             const dataToSave = placesData
@@ -1044,7 +1004,7 @@
         }
 
         // ============================================================
-        // ОБРАБОТЧИКИ КНОПОК
+        // ОБРАБОТЧИКИ
         // ============================================================
         document.getElementById('add-btn').addEventListener('click', function() {
             if (deleteMode || editMode) {
@@ -1052,27 +1012,22 @@
                 return;
             }
             if (!myMap) {
-                alert('Карта ещё не загружена, попробуйте через секунду.');
+                alert('Карта ещё не загружена');
                 return;
             }
-            const center = myMap.getCenter();
-            selectedCoords = center;
+            selectedCoords = myMap.getCenter();
             openModal();
         });
 
         document.getElementById('volzhsky-btn').addEventListener('click', function() {
             const coords = [48.7867, 44.7477];
-            myMap.setCenter(coords, 15, {
-                duration: 1000,
-                checkZoomRange: true
-            });
+            myMap.setCenter(coords, 15, { duration: 1000, checkZoomRange: true });
             const placemark = new ymaps.Placemark(coords, {
                 balloonContent: '<b>🏙️ Волжский</b><br>Волгоградская область'
             });
             myMap.geoObjects.add(placemark);
         });
 
-        // Закрытие модалок по клику на фон
         modal.addEventListener('click', function(e) {
             if (e.target === modal) closeModal();
         });
