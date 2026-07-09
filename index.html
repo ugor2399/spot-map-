@@ -25,12 +25,16 @@
             flex-direction: column;
             z-index: 10;
             overflow: hidden;
+            position: relative;
         }
+
+        /* ===== ЗАГОЛОВОК С КНОПКОЙ ===== */
         #sidebar-header {
-            padding: 20px;
+            padding: 16px 20px;
             background: #1a73e8;
             color: white;
             text-align: center;
+            position: relative;
         }
         #sidebar-header h2 {
             font-weight: 400;
@@ -40,8 +44,144 @@
             display: block;
             font-size: 12px;
             opacity: 0.8;
-            margin-top: 5px;
+            margin-top: 4px;
         }
+
+        /* КНОПКА "🔧" — всегда видна */
+        #dev-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #dev-toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        #dev-toggle-btn:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        /* ===== ПАНЕЛЬ РАЗРАБОТЧИКА ===== */
+        #dev-panel {
+            display: none;
+            background: #2c3e50;
+            padding: 10px 14px;
+            gap: 6px;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #e74c3c;
+        }
+        #dev-panel.active {
+            display: flex;
+        }
+        #dev-panel .dev-label {
+            color: #e74c3c;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(231, 76, 60, 0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        #dev-panel button {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+        }
+        #dev-panel button:hover {
+            transform: scale(1.05);
+        }
+        .dev-delete-btn { background: #e74c3c; }
+        .dev-delete-btn:hover { background: #c0392b; }
+        .dev-edit-btn { background: #f39c12; }
+        .dev-edit-btn:hover { background: #d68910; }
+        .dev-clear-btn { background: #8e44ad; }
+        .dev-clear-btn:hover { background: #6c3483; }
+        .dev-close-btn { background: #7f8c8d; margin-left: auto; }
+        .dev-close-btn:hover { background: #616a6b; }
+        .dev-locked {
+            background: #95a5a6 !important;
+            cursor: not-allowed !important;
+            opacity: 0.5;
+        }
+        .dev-locked:hover { transform: none !important; }
+
+        /* ===== МОДАЛКА ПАРОЛЯ ===== */
+        #passwordModal .modal-content {
+            max-width: 360px;
+        }
+        #passwordModal .modal-content h3 {
+            color: #e74c3c;
+            text-align: center;
+        }
+        #passwordModal .modal-content p {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        #passwordModal input {
+            font-size: 20px;
+            letter-spacing: 6px;
+            text-align: center;
+            padding: 12px;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+        #passwordModal input:focus {
+            border-color: #1a73e8;
+        }
+        .password-error {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        .password-error.show {
+            display: block;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-cancel { background: #e9ecef; color: #333; }
+        .btn-cancel:hover { background: #dde0e3; }
+        .btn-unlock { background: #e74c3c; color: white; }
+        .btn-unlock:hover { background: #c0392b; }
+
+        /* ===== СПИСОК МЕСТ ===== */
         #places-list {
             flex: 1;
             overflow-y: auto;
@@ -55,6 +195,7 @@
             border-left: 4px solid #1a73e8;
             cursor: pointer;
             transition: 0.2s;
+            position: relative;
         }
         .place-item:hover {
             background: #e9ecef;
@@ -77,6 +218,31 @@
             color: #888;
             margin-top: 4px;
         }
+        .place-item .delete-check {
+            display: none;
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            font-size: 20px;
+            color: #e74c3c;
+        }
+        .place-item.selected-for-delete {
+            border: 3px solid #e74c3c;
+            background: #fde8e8;
+            opacity: 0.6;
+        }
+        .place-item.selected-for-delete .delete-check {
+            display: block;
+        }
+        .place-item.select-mode {
+            border: 3px dashed #e74c3c;
+            cursor: pointer;
+        }
+        .place-item.select-mode:hover {
+            transform: scale(1.03);
+            background: #fde8e8;
+        }
+
         #map-container {
             flex: 1;
             position: relative;
@@ -150,7 +316,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         .modal-content h3 {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             color: #1a1a1a;
         }
         .modal-content label {
@@ -184,32 +350,14 @@
         .modal-content .photo-upload:hover {
             border-color: #1a73e8;
         }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .modal-actions button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-save {
-            background: #1a73e8;
+        .edit-mode-indicator {
+            background: #f39c12;
             color: white;
-        }
-        .btn-save:hover {
-            background: #1557b0;
-        }
-        .btn-cancel {
-            background: #e9ecef;
-            color: #333;
-        }
-        .btn-cancel:hover {
-            background: #dde0e3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 10px;
         }
 
         @media (max-width: 768px) {
@@ -226,12 +374,24 @@
             #controls {
                 bottom: 20px;
                 left: 20px;
-                flex-direction: column;
-                gap: 8px;
             }
             #add-btn, #volzhsky-btn {
-                padding: 12px 20px;
-                font-size: 14px;
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+            #dev-panel {
+                padding: 6px 10px;
+                gap: 4px;
+            }
+            #dev-panel button {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+            #dev-toggle-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 13px;
+                right: 8px;
             }
         }
     </style>
@@ -239,10 +399,22 @@
 <body>
 
     <div id="sidebar">
+        <!-- ===== ЗАГОЛОВОК С КНОПКОЙ 🔧 ===== -->
         <div id="sidebar-header">
             <h2>📍 Мои места</h2>
             <small>Кликни на метку, чтобы открыть карточку</small>
+            <button id="dev-toggle-btn" title="Панель разработчика">🔧</button>
         </div>
+
+        <!-- ===== ПАНЕЛЬ РАЗРАБОТЧИКА (скрыта по умолчанию) ===== -->
+        <div id="dev-panel">
+            <span class="dev-label">🔧 DEV</span>
+            <button class="dev-delete-btn" id="dev-delete-btn">🗑️ Удалить</button>
+            <button class="dev-edit-btn" id="dev-edit-btn">✏️ Редактировать</button>
+            <button class="dev-clear-btn" id="dev-clear-btn">🧹 Очистить всё</button>
+            <button class="dev-close-btn" id="dev-close-btn">✖ Закрыть</button>
+        </div>
+
         <div id="places-list"></div>
     </div>
 
@@ -254,6 +426,21 @@
         </div>
     </div>
 
+    <!-- ===== МОДАЛКА ПАРОЛЯ ===== -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3>🔐 Доступ к панели</h3>
+            <p>Введите пароль разработчика</p>
+            <input type="password" id="passwordInput" placeholder="Введите пароль" maxlength="20">
+            <div class="password-error" id="passwordError">❌ Неверный пароль!</div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closePasswordModal()">Отмена</button>
+                <button class="btn-unlock" onclick="checkPassword()">🔓 Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== МОДАЛКА ДОБАВЛЕНИЯ ===== -->
     <div id="placeModal" class="modal">
         <div class="modal-content">
             <h3>Новое место</h3>
@@ -276,33 +463,38 @@
         </div>
     </div>
 
+    <!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ===== -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>✏️ Редактировать место</h3>
+            <span class="edit-mode-indicator">Режим редактирования</span>
+            <label>Название</label>
+            <input type="text" id="editPlaceName" placeholder="Название">
+            <label>Описание</label>
+            <textarea id="editPlaceDesc" placeholder="Описание..."></textarea>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeEditModal()">Отмена</button>
+                <button class="btn-save" onclick="saveEditPlace()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/javascript"></script>
     <script>
-        let myMap;
-        let placesData = [];
-        let selectedCoords = null;
-        let currentPhotoData = null;
-
-        const placesListEl = document.getElementById('places-list');
-        const modal = document.getElementById('placeModal');
-        const placeNameInput = document.getElementById('placeName');
-        const placeDescInput = document.getElementById('placeDesc');
-        const photoInput = document.getElementById('photoInput');
-        const photoPreview = document.getElementById('photoPreview');
-        const previewImg = document.getElementById('previewImg');
+        // ============================================================
+        // 🔑 ПАРОЛЬ РАЗРАБОТЧИКА (измени на свой)
+        // ============================================================
+        const DEV_PASSWORD = 'MAMAS';
 
         // ============================================================
-        // 🔥 ЗДЕСЬ ТЫ ХРАНИШЬ СВОИ МЕСТА НАВСЕГДА!
-        // ============================================================
-        // Замени этот массив на свои места.
-        // Формат: [{ name: "Название", description: "Описание", coords: [широта, долгота], photo: "фото_в_base64" }]
+        // ПОСТОЯННЫЕ МЕСТА
         // ============================================================
         const PERMANENT_PLACES = [
             {
                 name: "Пример: Красная площадь",
                 description: "Главная площадь Москвы",
                 coords: [55.7539, 37.6208],
-                photo: null  // если есть фото, вставь сюда base64 строку
+                photo: null
             },
             {
                 name: "Пример: Байкал",
@@ -317,10 +509,42 @@
                 photo: null
             }
         ];
-        // ============================================================
-        // КОНЕЦ БЛОКА С МЕСТАМИ
-        // ============================================================
 
+        // ============================================================
+        // ПЕРЕМЕННЫЕ
+        // ============================================================
+        let myMap;
+        let placesData = [];
+        let selectedCoords = null;
+        let currentPhotoData = null;
+        let deleteMode = false;
+        let editMode = false;
+        let editingPlaceId = null;
+        let selectedForDelete = new Set();
+        let isDevUnlocked = false;
+
+        // DOM-элементы
+        const placesListEl = document.getElementById('places-list');
+        const modal = document.getElementById('placeModal');
+        const editModal = document.getElementById('editModal');
+        const passwordModal = document.getElementById('passwordModal');
+        const devPanel = document.getElementById('dev-panel');
+        const devToggleBtn = document.getElementById('dev-toggle-btn');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordError = document.getElementById('passwordError');
+
+        const placeNameInput = document.getElementById('placeName');
+        const placeDescInput = document.getElementById('placeDesc');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const previewImg = document.getElementById('previewImg');
+
+        const editNameInput = document.getElementById('editPlaceName');
+        const editDescInput = document.getElementById('editPlaceDesc');
+
+        // ============================================================
+        // ИНИЦИАЛИЗАЦИЯ КАРТЫ
+        // ============================================================
         ymaps.ready(init);
         function init() {
             myMap = new ymaps.Map('map', {
@@ -330,13 +554,14 @@
             });
 
             myMap.events.add('click', function(e) {
+                if (deleteMode || editMode) {
+                    alert('Сначала выйди из режима редактирования/удаления (закрой панель разработчика)');
+                    return;
+                }
                 selectedCoords = e.get('coords');
                 openModal();
             });
 
-            // ===== ЗАГРУЗКА МЕСТ =====
-            // 1. Сначала загружаем постоянные места из массива PERMANENT_PLACES
-            // 2. Потом добавляем места из localStorage (если они есть)
             loadPermanentPlaces();
             loadFromStorage();
 
@@ -351,17 +576,180 @@
                 };
                 reader.readAsDataURL(file);
             });
+
+            // ===== КНОПКА 🔧 — ОТКРЫВАЕТ МОДАЛКУ ПАРОЛЯ =====
+            devToggleBtn.addEventListener('click', function() {
+                if (isDevUnlocked) {
+                    // Если уже разблокировано — просто скрываем/показываем панель
+                    devPanel.classList.toggle('active');
+                    if (!devPanel.classList.contains('active')) {
+                        exitDeleteMode();
+                        exitEditMode();
+                        updateDevButtons();
+                    }
+                } else {
+                    // Показываем модалку пароля
+                    openPasswordModal();
+                }
+            });
+
+            // Закрытие модалки пароля по Enter
+            passwordInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+
+            // ===== ОСТАЛЬНЫЕ КНОПКИ =====
+            document.getElementById('dev-close-btn').addEventListener('click', function() {
+                devPanel.classList.remove('active');
+                exitDeleteMode();
+                exitEditMode();
+                updateDevButtons();
+            });
+
+            document.getElementById('dev-delete-btn').addEventListener('click', function() {
+                if (!isDevUnlocked) return;
+                if (editMode) exitEditMode();
+                deleteMode = !deleteMode;
+                if (deleteMode) {
+                    selectedForDelete.clear();
+                    alert('🔴 Режим удаления ВКЛЮЧЁН\n\nКликай по местам в списке, чтобы отметить их.\nПотом нажми "Удалить" ещё раз.');
+                } else {
+                    if (selectedForDelete.size > 0) {
+                        confirmDeleteSelected();
+                    } else {
+                        alert('Режим удаления ВЫКЛЮЧЕН');
+                    }
+                }
+                renderPlacesList();
+                updateDevButtons();
+            });
+
+            document.getElementById('dev-edit-btn').addEventListener('click', function() {
+                if (!isDevUnlocked) return;
+                if (deleteMode) {
+                    exitDeleteMode();
+                }
+                editMode = !editMode;
+                if (editMode) {
+                    alert('✏️ Режим редактирования ВКЛЮЧЁН\n\nКликай по месту в списке, чтобы отредактировать.');
+                } else {
+                    alert('Режим редактирования ВЫКЛЮЧЕН');
+                }
+                renderPlacesList();
+                updateDevButtons();
+            });
+
+            document.getElementById('dev-clear-btn').addEventListener('click', function() {
+                if (!isDevUnlocked) return;
+                if (placesData.length === 0) {
+                    alert('Нет мест для удаления.');
+                    return;
+                }
+                const permanentCount = placesData.filter(p => p.permanent).length;
+                const userCount = placesData.filter(p => !p.permanent).length;
+                
+                if (userCount === 0) {
+                    alert('Нет пользовательских мест для удаления. Постоянные места удалить нельзя.');
+                    return;
+                }
+
+                if (confirm(`⚠️ Удалить ВСЕ ${userCount} пользовательских мест?\n\nПостоянные места (${permanentCount} шт.) останутся.`)) {
+                    // Удаляем только НЕ постоянные
+                    placesData = placesData.filter(p => p.permanent);
+                    
+                    myMap.geoObjects.removeAll();
+                    placesData.forEach(p => createPlacemark(p));
+                    
+                    renderPlacesList();
+                    saveToStorage();
+                    alert('✅ Все пользовательские места удалены!');
+                }
+            });
+
+            console.log('✅ Карта готова! Пароль: MAMAS');
         }
 
-        // ===== ЗАГРУЗКА ПОСТОЯННЫХ МЕСТ =====
+        // ============================================================
+        // ПАРОЛЬ
+        // ============================================================
+        function openPasswordModal() {
+            passwordInput.value = '';
+            passwordError.classList.remove('show');
+            passwordModal.classList.add('active');
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+
+        function closePasswordModal() {
+            passwordModal.classList.remove('active');
+            passwordError.classList.remove('show');
+        }
+
+        function checkPassword() {
+            const entered = passwordInput.value.trim();
+            if (entered === DEV_PASSWORD) {
+                isDevUnlocked = true;
+                closePasswordModal();
+                devPanel.classList.add('active');
+                alert('🔓 Панель разработчика разблокирована!');
+                updateDevButtons();
+            } else {
+                passwordError.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        // Закрытие модалки пароля по клику на фон
+        passwordModal.addEventListener('click', function(e) {
+            if (e.target === passwordModal) closePasswordModal();
+        });
+
+        // ============================================================
+        // ОБНОВЛЕНИЕ КНОПОК
+        // ============================================================
+        function updateDevButtons() {
+            const deleteBtn = document.getElementById('dev-delete-btn');
+            const editBtn = document.getElementById('dev-edit-btn');
+            
+            if (!isDevUnlocked) {
+                deleteBtn.classList.add('dev-locked');
+                editBtn.classList.add('dev-locked');
+                deleteBtn.textContent = '🗑️ Удалить 🔒';
+                editBtn.textContent = '✏️ Редактировать 🔒';
+                return;
+            }
+            
+            deleteBtn.classList.remove('dev-locked');
+            editBtn.classList.remove('dev-locked');
+            
+            if (deleteMode) {
+                deleteBtn.textContent = `✅ Удалить (${selectedForDelete.size})`;
+                deleteBtn.style.background = '#e74c3c';
+            } else {
+                deleteBtn.textContent = '🗑️ Удалить';
+                deleteBtn.style.background = '#e74c3c';
+            }
+            
+            if (editMode) {
+                editBtn.textContent = '✏️ Редактировать (вкл)';
+                editBtn.style.background = '#f39c12';
+            } else {
+                editBtn.textContent = '✏️ Редактировать';
+                editBtn.style.background = '#f39c12';
+            }
+        }
+
+        // ============================================================
+        // ЗАГРУЗКА ПОСТОЯННЫХ МЕСТ
+        // ============================================================
         function loadPermanentPlaces() {
             PERMANENT_PLACES.forEach(placeData => {
-                // Проверяем, есть ли уже такое место в placesData (по координатам)
                 const exists = placesData.some(p => 
                     p.coords[0] === placeData.coords[0] && 
                     p.coords[1] === placeData.coords[1]
                 );
-                
                 if (!exists) {
                     const place = {
                         id: Date.now() + Math.random() * 1000,
@@ -370,7 +758,7 @@
                         coords: placeData.coords,
                         photo: placeData.photo || null,
                         _placemark: null,
-                        permanent: true  // помечаем, что это постоянное место
+                        permanent: true
                     };
                     placesData.push(place);
                     createPlacemark(place);
@@ -379,6 +767,9 @@
             renderPlacesList();
         }
 
+        // ============================================================
+        // ФУНКЦИИ МОДАЛОК
+        // ============================================================
         function openModal() {
             placeNameInput.value = '';
             placeDescInput.value = '';
@@ -394,6 +785,15 @@
             selectedCoords = null;
         }
 
+        function closeEditModal() {
+            editModal.classList.remove('active');
+            editingPlaceId = null;
+            exitEditMode();
+        }
+
+        // ============================================================
+        // СОХРАНЕНИЕ МЕСТА
+        // ============================================================
         function savePlace() {
             const name = placeNameInput.value.trim();
             const desc = placeDescInput.value.trim();
@@ -412,7 +812,7 @@
                 description: desc || 'Без описания',
                 coords: selectedCoords,
                 photo: currentPhotoData || null,
-                permanent: false  // пользовательские места не постоянные
+                permanent: false
             };
 
             placesData.push(newPlace);
@@ -422,6 +822,9 @@
             closeModal();
         }
 
+        // ============================================================
+        // СОЗДАНИЕ МЕТКИ
+        // ============================================================
         function createPlacemark(place) {
             const placemark = new ymaps.Placemark(place.coords, {
                 balloonContent: `
@@ -445,6 +848,9 @@
             place._placemark = placemark;
         }
 
+        // ============================================================
+        // ОТРИСОВКА СПИСКА
+        // ============================================================
         function renderPlacesList() {
             placesListEl.innerHTML = '';
             if (placesData.length === 0) {
@@ -456,16 +862,46 @@
             sorted.forEach(place => {
                 const item = document.createElement('div');
                 item.className = 'place-item';
-                // постоянные места помечаем зелёной полоской
                 if (place.permanent) {
                     item.style.borderLeftColor = '#27ae60';
                 }
+
+                if (deleteMode && !place.permanent && isDevUnlocked) {
+                    item.classList.add('select-mode');
+                    item.dataset.placeId = place.id;
+                    const checkMark = document.createElement('span');
+                    checkMark.className = 'delete-check';
+                    checkMark.textContent = '✅';
+                    item.appendChild(checkMark);
+                }
+
+                if (editMode && !place.permanent && isDevUnlocked) {
+                    item.style.border = '3px dashed #f39c12';
+                    item.style.cursor = 'pointer';
+                }
+
+                // Если выбрано для удаления
+                if (selectedForDelete.has(place.id)) {
+                    item.classList.add('selected-for-delete');
+                }
+
                 item.innerHTML = `
                     <h4>${place.name} ${place.permanent ? '🔒' : ''}</h4>
                     <p>${place.description}</p>
                     <div class="coords">${place.coords[0].toFixed(4)}, ${place.coords[1].toFixed(4)}</div>
                 `;
-                item.addEventListener('click', function() {
+
+                item.addEventListener('click', function(e) {
+                    if (deleteMode && !place.permanent && isDevUnlocked) {
+                        e.stopPropagation();
+                        toggleSelectForDelete(place.id);
+                        return;
+                    }
+                    if (editMode && !place.permanent && isDevUnlocked) {
+                        e.stopPropagation();
+                        openEditModal(place);
+                        return;
+                    }
                     if (place._placemark) {
                         myMap.setCenter(place.coords, 12, {
                             duration: 500,
@@ -474,12 +910,101 @@
                         place._placemark.balloon.open();
                     }
                 });
+
                 placesListEl.appendChild(item);
             });
+            updateDevButtons();
         }
 
+        // ============================================================
+        // УДАЛЕНИЕ
+        // ============================================================
+        function toggleSelectForDelete(placeId) {
+            if (selectedForDelete.has(placeId)) {
+                selectedForDelete.delete(placeId);
+            } else {
+                selectedForDelete.add(placeId);
+            }
+            renderPlacesList();
+            updateDevButtons();
+        }
+
+        function confirmDeleteSelected() {
+            if (selectedForDelete.size === 0) {
+                alert('Выбери места для удаления (кликни по ним).');
+                return;
+            }
+
+            if (!confirm(`Удалить ${selectedForDelete.size} место(а)? Это действие нельзя отменить!`)) return;
+
+            const toRemove = new Set(selectedForDelete);
+            selectedForDelete.clear();
+
+            placesData = placesData.filter(p => !toRemove.has(p.id));
+
+            myMap.geoObjects.removeAll();
+            placesData.forEach(p => createPlacemark(p));
+
+            renderPlacesList();
+            saveToStorage();
+            exitDeleteMode();
+            alert('✅ Места удалены!');
+        }
+
+        function exitDeleteMode() {
+            deleteMode = false;
+            selectedForDelete.clear();
+            renderPlacesList();
+            updateDevButtons();
+        }
+
+        // ============================================================
+        // РЕДАКТИРОВАНИЕ
+        // ============================================================
+        function openEditModal(place) {
+            editingPlaceId = place.id;
+            editNameInput.value = place.name;
+            editDescInput.value = place.description;
+            editModal.classList.add('active');
+        }
+
+        function saveEditPlace() {
+            const name = editNameInput.value.trim();
+            const desc = editDescInput.value.trim();
+            if (!name) {
+                alert('Введите название.');
+                return;
+            }
+
+            const place = placesData.find(p => p.id === editingPlaceId);
+            if (!place) {
+                alert('Место не найдено.');
+                return;
+            }
+
+            place.name = name;
+            place.description = desc || 'Без описания';
+
+            myMap.geoObjects.remove(place._placemark);
+            createPlacemark(place);
+
+            renderPlacesList();
+            saveToStorage();
+            closeEditModal();
+            alert('✅ Место обновлено!');
+        }
+
+        function exitEditMode() {
+            editMode = false;
+            editingPlaceId = null;
+            renderPlacesList();
+            updateDevButtons();
+        }
+
+        // ============================================================
+        // СОХРАНЕНИЕ В localStorage
+        // ============================================================
         function saveToStorage() {
-            // Сохраняем только НЕ постоянные места (чтобы не дублировать)
             const dataToSave = placesData
                 .filter(p => !p.permanent)
                 .map(p => ({
@@ -498,12 +1023,10 @@
             try {
                 const saved = JSON.parse(raw);
                 saved.forEach(placeData => {
-                    // Проверяем, нет ли уже такого места (по координатам)
                     const exists = placesData.some(p => 
                         p.coords[0] === placeData.coords[0] && 
                         p.coords[1] === placeData.coords[1]
                     );
-                    
                     if (!exists) {
                         const place = {
                             ...placeData,
@@ -520,7 +1043,14 @@
             }
         }
 
+        // ============================================================
+        // ОБРАБОТЧИКИ КНОПОК
+        // ============================================================
         document.getElementById('add-btn').addEventListener('click', function() {
+            if (deleteMode || editMode) {
+                alert('Сначала выйди из режима редактирования/удаления');
+                return;
+            }
             if (!myMap) {
                 alert('Карта ещё не загружена, попробуйте через секунду.');
                 return;
@@ -531,23 +1061,26 @@
         });
 
         document.getElementById('volzhsky-btn').addEventListener('click', function() {
-            var volzhskyCoords = [48.7867, 44.7477];
-            myMap.setCenter(volzhskyCoords, 15, {
+            const coords = [48.7867, 44.7477];
+            myMap.setCenter(coords, 15, {
                 duration: 1000,
                 checkZoomRange: true
             });
-
-            var placemark = new ymaps.Placemark(volzhskyCoords, {
+            const placemark = new ymaps.Placemark(coords, {
                 balloonContent: '<b>🏙️ Волжский</b><br>Волгоградская область'
             });
             myMap.geoObjects.add(placemark);
         });
 
+        // Закрытие модалок по клику на фон
         modal.addEventListener('click', function(e) {
             if (e.target === modal) closeModal();
         });
+        editModal.addEventListener('click', function(e) {
+            if (e.target === editModal) closeEditModal();
+        });
 
-        console.log('✅ Карта готова! Есть постоянные места.');
+        console.log('✅ Карта готова! Пароль: MAMAS');
     </script>
 </body>
 </html>
