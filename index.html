@@ -85,26 +85,47 @@
             width: 100%;
             height: 100%;
         }
-        #add-btn {
+
+        #controls {
             position: absolute;
             bottom: 30px;
             left: 30px;
-            background: #1a73e8;
-            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        #add-btn, #volzhsky-btn {
             border: none;
             padding: 14px 28px;
             border-radius: 50px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(26,115,232,0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: 0.2s;
-            z-index: 100;
+            color: white;
+        }
+
+        #add-btn {
+            background: #1a73e8;
+            box-shadow: 0 4px 12px rgba(26,115,232,0.4);
         }
         #add-btn:hover {
             background: #1557b0;
             transform: scale(1.05);
         }
+
+        #volzhsky-btn {
+            background: #e67e22;
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
+        }
+        #volzhsky-btn:hover {
+            background: #d35400;
+            transform: scale(1.05);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -190,6 +211,7 @@
         .btn-cancel:hover {
             background: #dde0e3;
         }
+
         @media (max-width: 768px) {
             body {
                 flex-direction: column-reverse;
@@ -200,6 +222,16 @@
             }
             #map-container {
                 height: 60vh;
+            }
+            #controls {
+                bottom: 20px;
+                left: 20px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            #add-btn, #volzhsky-btn {
+                padding: 12px 20px;
+                font-size: 14px;
             }
         }
     </style>
@@ -216,7 +248,10 @@
 
     <div id="map-container">
         <div id="map"></div>
-        <button id="add-btn">➕ Добавить место</button>
+        <div id="controls">
+            <button id="add-btn">➕ Добавить место</button>
+            <button id="volzhsky-btn">🏙️ Волжский</button>
+        </div>
     </div>
 
     <div id="placeModal" class="modal">
@@ -256,6 +291,36 @@
         const photoPreview = document.getElementById('photoPreview');
         const previewImg = document.getElementById('previewImg');
 
+        // ============================================================
+        // 🔥 ЗДЕСЬ ТЫ ХРАНИШЬ СВОИ МЕСТА НАВСЕГДА!
+        // ============================================================
+        // Замени этот массив на свои места.
+        // Формат: [{ name: "Название", description: "Описание", coords: [широта, долгота], photo: "фото_в_base64" }]
+        // ============================================================
+        const PERMANENT_PLACES = [
+            {
+                name: "Пример: Красная площадь",
+                description: "Главная площадь Москвы",
+                coords: [55.7539, 37.6208],
+                photo: null  // если есть фото, вставь сюда base64 строку
+            },
+            {
+                name: "Пример: Байкал",
+                description: "Самое глубокое озеро в мире",
+                coords: [53.5587, 108.1650],
+                photo: null
+            },
+            {
+                name: "Волжский",
+                description: "Мой город",
+                coords: [48.7867, 44.7477],
+                photo: null
+            }
+        ];
+        // ============================================================
+        // КОНЕЦ БЛОКА С МЕСТАМИ
+        // ============================================================
+
         ymaps.ready(init);
         function init() {
             myMap = new ymaps.Map('map', {
@@ -269,6 +334,10 @@
                 openModal();
             });
 
+            // ===== ЗАГРУЗКА МЕСТ =====
+            // 1. Сначала загружаем постоянные места из массива PERMANENT_PLACES
+            // 2. Потом добавляем места из localStorage (если они есть)
+            loadPermanentPlaces();
             loadFromStorage();
 
             photoInput.addEventListener('change', function(e) {
@@ -282,6 +351,32 @@
                 };
                 reader.readAsDataURL(file);
             });
+        }
+
+        // ===== ЗАГРУЗКА ПОСТОЯННЫХ МЕСТ =====
+        function loadPermanentPlaces() {
+            PERMANENT_PLACES.forEach(placeData => {
+                // Проверяем, есть ли уже такое место в placesData (по координатам)
+                const exists = placesData.some(p => 
+                    p.coords[0] === placeData.coords[0] && 
+                    p.coords[1] === placeData.coords[1]
+                );
+                
+                if (!exists) {
+                    const place = {
+                        id: Date.now() + Math.random() * 1000,
+                        name: placeData.name,
+                        description: placeData.description || 'Без описания',
+                        coords: placeData.coords,
+                        photo: placeData.photo || null,
+                        _placemark: null,
+                        permanent: true  // помечаем, что это постоянное место
+                    };
+                    placesData.push(place);
+                    createPlacemark(place);
+                }
+            });
+            renderPlacesList();
         }
 
         function openModal() {
@@ -316,7 +411,8 @@
                 name: name,
                 description: desc || 'Без описания',
                 coords: selectedCoords,
-                photo: currentPhotoData || null
+                photo: currentPhotoData || null,
+                permanent: false  // пользовательские места не постоянные
             };
 
             placesData.push(newPlace);
@@ -336,11 +432,12 @@
                         <p style="margin:8px 0 0 0; font-size:11px; color:#888;">
                             📍 ${place.coords[0].toFixed(5)}, ${place.coords[1].toFixed(5)}
                         </p>
+                        ${place.permanent ? '<p style="margin-top:6px; font-size:10px; color:#27ae60;">🔒 Постоянное место</p>' : ''}
                     </div>
                 `,
                 hintContent: place.name
             }, {
-                preset: 'islands#redDotIconWithCaption',
+                preset: place.permanent ? 'islands#greenDotIconWithCaption' : 'islands#redDotIconWithCaption',
                 iconCaption: place.name
             });
 
@@ -359,8 +456,12 @@
             sorted.forEach(place => {
                 const item = document.createElement('div');
                 item.className = 'place-item';
+                // постоянные места помечаем зелёной полоской
+                if (place.permanent) {
+                    item.style.borderLeftColor = '#27ae60';
+                }
                 item.innerHTML = `
-                    <h4>${place.name}</h4>
+                    <h4>${place.name} ${place.permanent ? '🔒' : ''}</h4>
                     <p>${place.description}</p>
                     <div class="coords">${place.coords[0].toFixed(4)}, ${place.coords[1].toFixed(4)}</div>
                 `;
@@ -378,13 +479,16 @@
         }
 
         function saveToStorage() {
-            const dataToSave = placesData.map(p => ({
-                id: p.id,
-                name: p.name,
-                description: p.description,
-                coords: p.coords,
-                photo: p.photo
-            }));
+            // Сохраняем только НЕ постоянные места (чтобы не дублировать)
+            const dataToSave = placesData
+                .filter(p => !p.permanent)
+                .map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    description: p.description,
+                    coords: p.coords,
+                    photo: p.photo
+                }));
             localStorage.setItem('myPlaces', JSON.stringify(dataToSave));
         }
 
@@ -394,12 +498,21 @@
             try {
                 const saved = JSON.parse(raw);
                 saved.forEach(placeData => {
-                    const place = {
-                        ...placeData,
-                        _placemark: null
-                    };
-                    placesData.push(place);
-                    createPlacemark(place);
+                    // Проверяем, нет ли уже такого места (по координатам)
+                    const exists = placesData.some(p => 
+                        p.coords[0] === placeData.coords[0] && 
+                        p.coords[1] === placeData.coords[1]
+                    );
+                    
+                    if (!exists) {
+                        const place = {
+                            ...placeData,
+                            _placemark: null,
+                            permanent: false
+                        };
+                        placesData.push(place);
+                        createPlacemark(place);
+                    }
                 });
                 renderPlacesList();
             } catch(e) {
@@ -417,11 +530,24 @@
             openModal();
         });
 
+        document.getElementById('volzhsky-btn').addEventListener('click', function() {
+            var volzhskyCoords = [48.7867, 44.7477];
+            myMap.setCenter(volzhskyCoords, 15, {
+                duration: 1000,
+                checkZoomRange: true
+            });
+
+            var placemark = new ymaps.Placemark(volzhskyCoords, {
+                balloonContent: '<b>🏙️ Волжский</b><br>Волгоградская область'
+            });
+            myMap.geoObjects.add(placemark);
+        });
+
         modal.addEventListener('click', function(e) {
             if (e.target === modal) closeModal();
         });
 
-        console.log('✅ Карта готова! Кликай на карту или на кнопку "Добавить место".');
+        console.log('✅ Карта готова! Есть постоянные места.');
     </script>
 </body>
 </html>
