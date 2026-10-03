@@ -12,6 +12,7 @@
         <div id="sidebar-header">
             <h2>📍 Мои места</h2>
             <small>Кликни на метку, чтобы открыть карточку</small>
+            <button id="sidebar-close-btn" title="Закрыть">✖</button>
         </div>
         <div id="dev-panel">
             <span class="dev-label">🔧 DEV</span>
@@ -26,6 +27,7 @@
     <div id="map-container">
         <div id="map"></div>
         <div id="controls">
+            <button id="toggle-sidebar-btn" title="Мои места">📍</button>
             <button id="dev-toggle-btn" title="Панель разработчика">🔧</button>
             <button id="add-btn" title="Добавить место">➕</button>
             <button id="volzhsky-btn" title="Волжский">🏙️</button>
@@ -133,7 +135,7 @@
         <div class="lb-counter" id="lightboxCounter">1 / 1</div>
     </div>
 
-    <!-- Яндекс.Карты API (JS!) -->
+    <!-- Яндекс.Карты API -->
     <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/javascript"></script>
     <!-- Твой скрипт -->
     <script src="script.js"></script>
