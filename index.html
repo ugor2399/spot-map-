@@ -137,6 +137,33 @@
 
     <!-- Яндекс.Карты API -->
     <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/javascript"></script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYasLs0jFuWFWXCoqD-BObuVVcSBiAheI",
+            authDomain: "spot-df1d4.firebaseapp.com",
+            databaseURL: "https://spot-df1d4-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "spot-df1d4",
+            storageBucket: "spot-df1d4.firebasestorage.app",
+            messagingSenderId: "1002251885638",
+            appId: "1:1002251885638:web:57d5ff763f8c03b229fe47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        window.fbDB = database;
+        window.fbRef = ref;
+        window.fbOnValue = onValue;
+        window.fbSet = set;
+
+        console.log('✅ Firebase подключён!');
+    </script>
+
     <!-- Твой скрипт -->
     <script src="script.js"></script>
 </body>
