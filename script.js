@@ -26,29 +26,41 @@ const CITY_ICONS = {
 // ПОСТОЯННЫЕ МЕСТА (прописаны в коде — не пропадают)
 // ============================================================
 const PERMANENT_PLACES = [
-    // Волжский
+    // ============ ВОЛЖСКИЙ ============
     {
         city: "Волжский",
         name: "Спот на БирМастер",
         description: "Спот в стили КК, можно залезть на крышу с боку здания. Могут быстро прогнать.",
         coords: [48.7850, 44.7828],
-        photos: []
+        photos: [
+            "images/BirMaster1.jpg",
+            "images/BirMaster2.jpg",
+            "images/BirMaster3.jpg"
+        ]
     },
     {
         city: "Волжский",
         name: "Квадрат",
         description: "Квадрат менул перед дом с гисомом",
         coords: [48.7736, 44.8010],
-        photos: []
+        photos: [
+            "images/Kvadrat1.jpg",
+            "images/Kvadrat2.jpg"
+        ]
     },
     {
         city: "Волжский",
         name: "Спот на 10 ступенях",
         description: "Классический волжский спот — лестница из 10 ступеней. Отличное место для трюков.",
         coords: [48.77724, 44.79851],
-        photos: []
+        photos: [
+            "images/tenStairs1.jpg",
+            "images/tenStairs2.jpg",
+            "images/tenStairs3.jpg"
+        ]
     },
-    // Москва
+
+    // ============ МОСКВА ============
     {
         city: "Москва",
         name: "Красная площадь",
