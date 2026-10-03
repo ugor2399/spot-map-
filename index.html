@@ -923,13 +923,53 @@
         const KNOWN_CITIES = ["Волжский", "Москва", "Санкт-Петербург", "Казань", "Сочи"];
 
         const PERMANENT_PLACES = [
-            { city: "Волжский", name: "Спот на БирМастер", description: "Спот в стили КК, можно залезть на крышу с боку здания. Могут быстро прогнать.", coords: [48.7850, 44.7828], photos: ["images/bir_master.jpg"] },
-            { city: "Волжский", name: "Квадрат", description: "Квадрат менул перед дом с гисомом", coords: [48.7736, 44.8010], photos: ["images/kvadrat.jpg"] },
-            { city: "Волжский", name: "Спот на 10 ступенях", description: "Классический волжский спот — лестница из 10 ступеней.", coords: [48.77724, 44.79851], photos: ["images/10_stupeney.jpg"] },
-            { city: "Москва", name: "Красная площадь", description: "Главная площадь Москвы.", coords: [55.7539, 37.6208], photos: ["images/krasnaya.jpg"] },
-            { city: "Москва", name: "Парк Горького", description: "Большой парк с фонтанами.", coords: [55.7300, 37.6010], photos: ["images/park_gorkogo.jpg"] }
-        ];
-
+    { 
+        city: "Волжский", 
+        name: "Спот на БирМастер", 
+        description: "Спот в стили КК, можно залезть на крышу с боку здания. Могут быстро прогнать.", 
+        coords: [48.7850, 44.7828], 
+        photos: [
+            "images/BirMaster1.jpg",
+            "images/BirMaster2.jpg",
+            "images/BirMaster3.jpg"
+        ]
+    },
+    { 
+        city: "Волжский", 
+        name: "Квадрат", 
+        description: "Квадрат менул перед дом с гисомом", 
+        coords: [48.7736, 44.8010], 
+        photos: [
+            "images/Kvadrat1.jpg",
+            "images/Kvadrat2.jpg"
+        ]
+    },
+    { 
+        city: "Волжский", 
+        name: "Спот на 10 ступенях", 
+        description: "Классический волжский спот — лестница из 10 ступеней.", 
+        coords: [48.77724, 44.79851], 
+        photos: [
+            "images/tenStairs1.jpg",
+            "images/tenStairs2.jpg",
+            "images/tenStairs3.jpg"
+        ]
+    },
+    { 
+        city: "Москва", 
+        name: "Красная площадь", 
+        description: "Главная площадь Москвы.", 
+        coords: [55.7539, 37.6208], 
+        photos: []
+    },
+    { 
+        city: "Москва", 
+        name: "Парк Горького", 
+        description: "Большой парк с фонтанами.", 
+        coords: [55.7300, 37.6010], 
+        photos: []
+    }
+];
         let myMap;
         let placesData = [];
         let selectedCoords = null;
