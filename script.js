@@ -754,4 +754,111 @@ function saveToStorage() {
 }
 
 // ============================================================
-// ЗАГРУЗКА (FIREBASE
+// ЗАГРУЗКА (FIREBASE + LOCALSTORAGE как резерв)
+// ============================================================
+function loadFromStorage() {
+    // Локальная загрузка (резерв)
+    function loadLocal() {
+        const raw = localStorage.getItem('myPlaces');
+        if (!raw) return;
+        try {
+            const saved = JSON.parse(raw);
+            saved.forEach(data => {
+                const exists = placesData.some(p =>
+                    p.coords[0] === data.coords[0] && p.coords[1] === data.coords[1]
+                );
+                if (!exists) {
+                    const place = {
+                        ...data,
+                        city: data.city || 'Другой',
+                        photos: data.photos || [],
+                        _placemark: null,
+                        permanent: false
+                    };
+                    placesData.push(place);
+                    createPlacemark(place);
+                }
+            });
+            renderPlacesList();
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    // Ждём Firebase (он загружается через type="module" асинхронно)
+    let attempts = 0;
+    const waitFB = setInterval(() => {
+        attempts++;
+        if (window.fbDB && window.fbRef && window.fbOnValue) {
+            clearInterval(waitFB);
+            console.log('✅ Firebase готов, загружаем споты...');
+
+            const placesRef = window.fbRef(window.fbDB, 'places');
+            window.fbOnValue(placesRef, (snapshot) => {
+                const data = snapshot.val();
+
+                // Удаляем ВСЕ пользовательские места (они сейчас придут из Firebase)
+                placesData = placesData.filter(p => p.permanent);
+
+                // Чистим карту от пользовательских меток
+                const permanentPlacemarks = placesData.map(p => p._placemark).filter(Boolean);
+                myMap.geoObjects.removeAll();
+                permanentPlacemarks.forEach(pm => myMap.geoObjects.add(pm));
+
+                // Добавляем заново из Firebase
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const d = data[key];
+                        const place = {
+                            id: parseInt(key) || Date.now() + Math.random() * 1000,
+                            city: d.city || 'Другой',
+                            name: d.name,
+                            description: d.description || 'Без описания',
+                            coords: d.coords,
+                            photos: d.photos || [],
+                            _placemark: null,
+                            permanent: false
+                        };
+                        placesData.push(place);
+                        createPlacemark(place);
+                    });
+                }
+
+                renderPlacesList();
+            });
+        }
+        if (attempts > 50) {
+            clearInterval(waitFB);
+            console.warn('Firebase не загрузился, используем localStorage');
+            loadLocal();
+        }
+    }, 100);
+}
+
+// ============================================================
+// ОБРАБОТЧИКИ КНОПОК
+// ============================================================
+document.getElementById('add-btn').addEventListener('click', () => {
+    if (deleteMode || editMode) {
+        alert('Выйди из режима редактирования');
+        return;
+    }
+    selectedCoords = myMap.getCenter();
+    openModal();
+});
+
+document.getElementById('volzhsky-btn').addEventListener('click', () => {
+    const coords = [48.7867, 44.7477];
+    myMap.setCenter(coords, 13, { duration: 1000, checkZoomRange: true });
+});
+
+// Клик по фону модалок — закрытие
+modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+});
+editModal.addEventListener('click', e => {
+    if (e.target === editModal) closeEditModal();
+});
+passwordModal.addEventListener('click', e => {
+    if (e.target === passwordModal) closePasswordModal();
+});
