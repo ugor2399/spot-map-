@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карта мест России</title>
-    <link rel="stylesheet" href="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/css">
+    <link rel="stylesheet" href="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU"
+        type="text/css">
     <style>
         * {
             margin: 0;
@@ -12,30 +14,35 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
             display: flex;
             height: 100vh;
             background: #f0f2f5;
         }
+
         #sidebar {
-            width: 320px;
+            width: 340px;
             background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             z-index: 10;
             overflow: hidden;
         }
+
         #sidebar-header {
             padding: 20px;
             background: #1a73e8;
             color: white;
             text-align: center;
         }
+
         #sidebar-header h2 {
             font-weight: 400;
             font-size: 20px;
         }
+
         #sidebar-header small {
             display: block;
             font-size: 12px;
@@ -43,7 +50,6 @@
             margin-top: 5px;
         }
 
-        /* ===== ПАНЕЛЬ РАЗРАБОТЧИКА ===== */
         #dev-panel {
             display: none;
             background: #2c3e50;
@@ -52,9 +58,11 @@
             flex-wrap: wrap;
             border-bottom: 3px solid #e74c3c;
         }
+
         #dev-panel.active {
             display: flex;
         }
+
         #dev-panel .dev-label {
             color: #e74c3c;
             font-size: 10px;
@@ -67,6 +75,7 @@
             display: flex;
             align-items: center;
         }
+
         #dev-panel button {
             padding: 5px 12px;
             border: none;
@@ -74,98 +83,155 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
             color: white;
         }
-        #dev-panel button:hover {
-            transform: scale(1.05);
+
+        .dev-delete-btn {
+            background: #e74c3c;
         }
-        .dev-delete-btn { background: #e74c3c; }
-        .dev-delete-btn:hover { background: #c0392b; }
-        .dev-edit-btn { background: #f39c12; }
-        .dev-edit-btn:hover { background: #d68910; }
-        .dev-clear-btn { background: #8e44ad; }
-        .dev-clear-btn:hover { background: #6c3483; }
-        .dev-close-btn { background: #7f8c8d; margin-left: auto; }
-        .dev-close-btn:hover { background: #616a6b; }
-        .dev-locked {
-            background: #95a5a6 !important;
-            cursor: not-allowed !important;
-            opacity: 0.5;
+
+        .dev-edit-btn {
+            background: #f39c12;
         }
-        .dev-locked:hover { transform: none !important; }
+
+        .dev-clear-btn {
+            background: #8e44ad;
+        }
+
+        .dev-close-btn {
+            background: #7f8c8d;
+            margin-left: auto;
+        }
 
         #places-list {
             flex: 1;
             overflow-y: auto;
             padding: 10px;
         }
-        .place-item {
+
+        .city-group {
+            margin-bottom: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+        }
+
+        .city-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
             background: #f8f9fa;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .city-header:hover {
+            background: #e9ecef;
+        }
+
+        .city-header .arrow {
+            font-size: 12px;
+            color: #666;
+            transition: transform 0.3s;
+            width: 14px;
+            text-align: center;
+        }
+
+        .city-group.collapsed .arrow {
+            transform: rotate(-90deg);
+        }
+
+        .city-group.collapsed .city-spots {
+            display: none;
+        }
+
+        .city-header .city-icon {
+            font-size: 18px;
+        }
+
+        .city-header .city-name {
+            flex: 1;
+            font-weight: 700;
+            font-size: 15px;
+            color: #1a1a1a;
+        }
+
+        .city-header .city-count {
+            font-size: 12px;
+            background: #1a73e8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .city-spots {
+            padding: 6px;
+            background: #fafbfc;
+        }
+
+        .place-item {
+            background: white;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
             border-left: 4px solid #1a73e8;
             cursor: pointer;
             transition: 0.2s;
             position: relative;
         }
+
+        .place-item:last-child {
+            margin-bottom: 0;
+        }
+
         .place-item:hover {
-            background: #e9ecef;
-            transform: scale(1.02);
+            background: #f0f7ff;
+            transform: translateX(3px);
         }
+
         .place-item h4 {
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             color: #1a1a1a;
+            font-size: 14px;
         }
+
         .place-item p {
-            font-size: 13px;
-            color: #5f6368;
+            font-size: 12px;
+            color: #666;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
         .place-item .coords {
-            font-size: 11px;
-            color: #888;
+            font-size: 10px;
+            color: #999;
             margin-top: 4px;
         }
-        .place-item .delete-check {
-            display: none;
-            position: absolute;
-            top: 6px;
-            right: 10px;
-            font-size: 20px;
-            color: #e74c3c;
-        }
-        .place-item.selected-for-delete {
-            border: 3px solid #e74c3c;
-            background: #fde8e8;
-            opacity: 0.6;
-        }
-        .place-item.selected-for-delete .delete-check {
-            display: block;
-        }
-        .place-item.select-mode {
-            border: 3px dashed #e74c3c;
-            cursor: pointer;
-        }
-        .place-item.select-mode:hover {
-            transform: scale(1.03);
-            background: #fde8e8;
+
+        .empty-city {
+            padding: 14px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            font-style: italic;
         }
 
         #map-container {
             flex: 1;
             position: relative;
         }
+
         #map {
             width: 100%;
             height: 100%;
         }
 
-        /* ===== КНОПКИ НА КАРТЕ ===== */
         #controls {
             position: absolute;
             bottom: 30px;
@@ -176,56 +242,33 @@
             z-index: 100;
         }
 
-        /* КНОПКА 🔧 — НАД КНОПКОЙ "Добавить место" */
-        #dev-toggle-btn {
+        #dev-toggle-btn,
+        #add-btn,
+        #volzhsky-btn {
             border: none;
-            padding: 12px 20px;
+            padding: 12px 24px;
             border-radius: 50px;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: 0.2s;
             color: white;
-            background: #2c3e50;
-            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
+
+        #dev-toggle-btn {
+            background: #2c3e50;
+        }
+
         #dev-toggle-btn:hover {
             background: #1a252f;
             transform: scale(1.05);
         }
-        #dev-toggle-btn .badge {
-            background: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #add-btn, #volzhsky-btn {
-            border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: 0.2s;
-            color: white;
-        }
 
         #add-btn {
             background: #1a73e8;
-            box-shadow: 0 4px 12px rgba(26,115,232,0.4);
         }
+
         #add-btn:hover {
             background: #1557b0;
             transform: scale(1.05);
@@ -233,41 +276,43 @@
 
         #volzhsky-btn {
             background: #e67e22;
-            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
         }
+
         #volzhsky-btn:hover {
             background: #d35400;
             transform: scale(1.05);
         }
 
-        /* ===== МОДАЛКИ ===== */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
+
         .modal.active {
             display: flex;
         }
+
         .modal-content {
             background: white;
             padding: 30px;
             border-radius: 16px;
-            width: 420px;
+            width: 460px;
             max-width: 95%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
+
         .modal-content h3 {
             margin-bottom: 16px;
             color: #1a1a1a;
         }
+
         .modal-content label {
             font-size: 14px;
             font-weight: 600;
@@ -275,19 +320,25 @@
             display: block;
             margin-top: 12px;
         }
-        .modal-content input, .modal-content textarea {
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             margin-top: 4px;
             font-size: 14px;
+            background: white;
         }
+
         .modal-content textarea {
             height: 70px;
             resize: vertical;
         }
-        .modal-content .photo-upload {
+
+        .photo-upload {
             border: 2px dashed #ccc;
             padding: 12px;
             border-radius: 8px;
@@ -296,24 +347,57 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .modal-content .photo-upload:hover {
+
+        .photo-upload:hover {
             border-color: #1a73e8;
+            background: #f0f7ff;
         }
-        .edit-mode-indicator {
-            background: #f39c12;
+
+        #photosPreview,
+        #editPhotosPreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .photo-thumb {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+        }
+
+        .photo-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-thumb .remove-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #e74c3c;
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
             font-size: 12px;
-            display: inline-block;
-            margin-bottom: 10px;
+            cursor: pointer;
+            line-height: 1;
         }
+
         .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
             margin-top: 16px;
         }
+
         .modal-actions button {
             padding: 10px 20px;
             border: none;
@@ -321,57 +405,357 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .btn-cancel { background: #e9ecef; color: #333; }
-        .btn-cancel:hover { background: #dde0e3; }
-        .btn-save { background: #1a73e8; color: white; }
-        .btn-save:hover { background: #1557b0; }
-        .btn-unlock { background: #e74c3c; color: white; }
-        .btn-unlock:hover { background: #c0392b; }
 
-        /* Модалка пароля */
-        #passwordModal .modal-content { max-width: 360px; }
-        #passwordModal .modal-content h3 { color: #e74c3c; text-align: center; }
-        #passwordModal .modal-content p { text-align: center; color: #666; font-size: 14px; margin-bottom: 16px; }
-        #passwordModal input { font-size: 20px; letter-spacing: 6px; text-align: center; padding: 12px; width: 100%; border: 2px solid #ddd; border-radius: 8px; outline: none; }
-        #passwordModal input:focus { border-color: #1a73e8; }
-        .password-error { color: #e74c3c; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
-        .password-error.show { display: block; }
+        .btn-cancel {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-save {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .btn-unlock {
+            background: #e74c3c;
+            color: white;
+        }
+
+        #passwordModal input {
+            font-size: 20px;
+            letter-spacing: 6px;
+            text-align: center;
+            padding: 12px;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .password-error {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .password-error.show {
+            display: block;
+        }
+
+        .place-preview {
+            width: 280px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .place-preview .preview-photo {
+            width: 100%;
+            height: 160px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            background: #f0f2f5;
+        }
+
+        .place-preview .no-photo {
+            width: 100%;
+            height: 160px;
+            border-radius: 10px;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .place-preview h2 {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+
+        .place-preview .city-tag {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .place-preview .desc {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .place-preview .coords-line {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .place-preview .btn-more {
+            width: 100%;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .place-preview .btn-more:hover {
+            background: #1557b0;
+        }
+
+        #spotModal .modal-content {
+            width: 900px;
+            max-width: 95%;
+            max-height: 92vh;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: #1a73e8;
+            color: white;
+        }
+
+        .spot-header h2 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .spot-header .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .spot-body {
+            display: flex;
+            gap: 20px;
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .spot-body .left {
+            flex: 1.4;
+            min-width: 0;
+        }
+
+        .spot-body .right {
+            flex: 1;
+        }
+
+        .spot-gallery {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .spot-gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: zoom-in;
+        }
+
+        .spot-gallery .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spot-gallery .nav-prev {
+            left: 10px;
+        }
+
+        .spot-gallery .nav-next {
+            right: 10px;
+        }
+
+        .spot-gallery .counter {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+        }
+
+        .spot-gallery .no-photo-big {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 60px;
+            background: #222;
+        }
+
+        .spot-info h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .spot-info .full-desc {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .spot-info .info-row {
+            font-size: 13px;
+            color: #666;
+            padding: 8px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .spot-info .info-row strong {
+            color: #1a1a1a;
+        }
+
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #lightbox.active {
+            display: flex;
+        }
+
+        #lightbox img {
+            max-width: 92%;
+            max-height: 92%;
+            object-fit: contain;
+            transition: transform 0.2s;
+            cursor: zoom-out;
+        }
+
+        #lightbox .lb-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #lightbox .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        #lightbox .lb-prev {
+            left: 30px;
+        }
+
+        #lightbox .lb-next {
+            right: 30px;
+        }
+
+        #lightbox .lb-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 16px;
+            border-radius: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .spot-body {
+                flex-direction: column;
+            }
+
+            .spot-gallery {
+                height: 260px;
+            }
+        }
 
         @media (max-width: 768px) {
             body {
                 flex-direction: column-reverse;
             }
+
             #sidebar {
                 width: 100%;
-                height: 40vh;
+                height: 45vh;
             }
+
             #map-container {
-                height: 60vh;
-            }
-            #controls {
-                bottom: 20px;
-                left: 20px;
-                gap: 8px;
-            }
-            #add-btn, #volzhsky-btn, #dev-toggle-btn {
-                padding: 10px 18px;
-                font-size: 13px;
-            }
-            #dev-toggle-btn {
-                font-size: 16px;
-                padding: 8px 16px;
-            }
-            #dev-panel {
-                padding: 6px 10px;
-                gap: 4px;
-            }
-            #dev-panel button {
-                font-size: 10px;
-                padding: 4px 8px;
+                height: 55vh;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div id="sidebar">
@@ -379,8 +763,6 @@
             <h2>📍 Мои места</h2>
             <small>Кликни на метку, чтобы открыть карточку</small>
         </div>
-
-        <!-- ===== ПАНЕЛЬ РАЗРАБОТЧИКА ===== -->
         <div id="dev-panel">
             <span class="dev-label">🔧 DEV</span>
             <button class="dev-delete-btn" id="dev-delete-btn">🗑️ Удалить</button>
@@ -388,28 +770,23 @@
             <button class="dev-clear-btn" id="dev-clear-btn">🧹 Очистить всё</button>
             <button class="dev-close-btn" id="dev-close-btn">✖ Закрыть</button>
         </div>
-
         <div id="places-list"></div>
     </div>
 
     <div id="map-container">
         <div id="map"></div>
         <div id="controls">
-            <!-- ===== КНОПКА 🔧 НАД "Добавить место" ===== -->
-            <button id="dev-toggle-btn">
-                🔧 <span class="badge">DEV</span>
-            </button>
+            <button id="dev-toggle-btn">🔧 DEV</button>
             <button id="add-btn">➕ Добавить место</button>
             <button id="volzhsky-btn">🏙️ Волжский</button>
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА ПАРОЛЯ ===== -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
-            <h3>🔐 Доступ к панели</h3>
-            <p>Введите пароль разработчика</p>
-            <input type="password" id="passwordInput" placeholder="Введите пароль" maxlength="20">
+            <h3 style="color:#e74c3c;text-align:center;">🔐 Доступ к панели</h3>
+            <p style="text-align:center;color:#666;font-size:14px;margin-bottom:16px;">Введите пароль разработчика</p>
+            <input type="password" id="passwordInput" placeholder="••••••" maxlength="20">
             <div class="password-error" id="passwordError">❌ Неверный пароль!</div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closePasswordModal()">Отмена</button>
@@ -418,22 +795,28 @@
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА ДОБАВЛЕНИЯ ===== -->
     <div id="placeModal" class="modal">
         <div class="modal-content">
             <h3>Новое место</h3>
-            <label>Название</label>
-            <input type="text" id="placeName" placeholder="Например: Эльбрус">
+            <label>Город</label>
+            <select id="placeCity">
+                <option value="Волжский">🏙️ Волжский</option>
+                <option value="Москва">🏛️ Москва</option>
+                <option value="Санкт-Петербург">🌉 Санкт-Петербург</option>
+                <option value="Казань">🕌 Казань</option>
+                <option value="Сочи">🌴 Сочи</option>
+                <option value="Другой">📍 Другой город</option>
+            </select>
+            <label>Название спота</label>
+            <input type="text" id="placeName" placeholder="Например: Спот на БирМастер">
             <label>Описание</label>
             <textarea id="placeDesc" placeholder="Краткое описание..."></textarea>
-            <label>Фото (загрузи с компьютера)</label>
+            <label>Фото (можно несколько)</label>
             <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
-                📸 Нажми, чтобы выбрать фото
+                📸 Нажми, чтобы добавить фото
             </div>
-            <input type="file" id="photoInput" accept="image/*" style="display:none">
-            <div id="photoPreview" style="margin-top:8px; text-align:center; display:none;">
-                <img id="previewImg" src="#" alt="Фото" style="max-width:100%; max-height:120px; border-radius:8px;">
-            </div>
+            <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
+            <div id="photosPreview"></div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal()">Отмена</button>
                 <button class="btn-save" onclick="savePlace()">Сохранить</button>
@@ -441,15 +824,28 @@
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ===== -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <h3>✏️ Редактировать место</h3>
-            <span class="edit-mode-indicator">Режим редактирования</span>
+            <label>Город</label>
+            <select id="editPlaceCity">
+                <option value="Волжский">🏙️ Волжский</option>
+                <option value="Москва">🏛️ Москва</option>
+                <option value="Санкт-Петербург">🌉 Санкт-Петербург</option>
+                <option value="Казань">🕌 Казань</option>
+                <option value="Сочи">🌴 Сочи</option>
+                <option value="Другой">📍 Другой город</option>
+            </select>
             <label>Название</label>
-            <input type="text" id="editPlaceName" placeholder="Название">
+            <input type="text" id="editPlaceName">
             <label>Описание</label>
-            <textarea id="editPlaceDesc" placeholder="Описание..."></textarea>
+            <textarea id="editPlaceDesc"></textarea>
+            <label>Фото</label>
+            <div class="photo-upload" onclick="document.getElementById('editPhotoInput').click()">
+                📸 Добавить ещё фото
+            </div>
+            <input type="file" id="editPhotoInput" accept="image/*" multiple style="display:none">
+            <div id="editPhotosPreview"></div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeEditModal()">Отмена</button>
                 <button class="btn-save" onclick="saveEditPlace()">Сохранить</button>
@@ -457,188 +853,317 @@
         </div>
     </div>
 
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/javascript"></script>
+    <div id="spotModal" class="modal">
+        <div class="modal-content">
+            <div class="spot-header">
+                <h2 id="spotTitle">Название</h2>
+                <button class="close-btn" onclick="closeSpotModal()">✖</button>
+            </div>
+            <div class="spot-body">
+                <div class="left">
+                    <div class="spot-gallery" id="spotGallery"></div>
+                </div>
+                <div class="right">
+                    <div class="spot-info" id="spotInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightbox">
+        <button class="lb-close" onclick="closeLightbox()">✖</button>
+        <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">‹</button>
+        <img id="lightboxImg" src="">
+        <button class="lb-nav lb-next" onclick="lightboxNav(1)">›</button>
+        <div class="lb-counter" id="lightboxCounter">1 / 1</div>
+    </div>
+
+    <!-- Яндекс.Карты -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU"
+        type="text/javascript"></script>
+
+    <!-- ============================================================ -->
+    <!-- FIREBASE SDK -->
+    <!-- ============================================================ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYasLs0jFuWFWXCoqD-BObuVVcSBiAheI",
+            authDomain: "spot-df1d4.firebaseapp.com",
+            databaseURL: "https://spot-df1d4-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "spot-df1d4",
+            storageBucket: "spot-df1d4.firebasestorage.app",
+            messagingSenderId: "1002251885638",
+            appId: "1:1002251885638:web:57d5ff763f8c03b229fe47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Отдаём Firebase в глобальную область, чтобы использовать в основном скрипте
+        window.fb = {
+            db: db,
+            ref: ref,
+            onValue: onValue,
+            set: set,
+            remove: remove
+        };
+
+        console.log('✅ Firebase подключён!');
+    </script>
+
+    <!-- ============================================================ -->
+    <!-- ОСНОВНОЙ КОД -->
+    <!-- ============================================================ -->
     <script>
-        // ============================================================
-        // 🔑 ПАРОЛЬ РАЗРАБОТЧИКА
-        // ============================================================
         const DEV_PASSWORD = 'MAMAS';
 
-        // ============================================================
-        // ПОСТОЯННЫЕ МЕСТА
-        // ============================================================
+        const KNOWN_CITIES = ["Волжский", "Москва", "Санкт-Петербург", "Казань", "Сочи"];
+
         const PERMANENT_PLACES = [
-            {
-                name: "Пример: Красная площадь",
-                description: "Главная площадь Москвы",
-                coords: [55.7539, 37.6208],
-                photo: null
-            },
-            {
-                name: "Пример: Байкал",
-                description: "Самое глубокое озеро в мире",
-                coords: [53.5587, 108.1650],
-                photo: null
-            },
-            {
-                name: "Волжский",
-                description: "Мой город",
-                coords: [48.7867, 44.7477],
-                photo: null
-            }
+            { city: "Волжский", name: "Спот на БирМастер", description: "Спот в стили КК, можно залезть на крышу с боку здания. Могут быстро прогнать.", coords: [48.7850, 44.7828], photos: ["images/bir_master.jpg"] },
+            { city: "Волжский", name: "Квадрат", description: "Квадрат менул перед дом с гисомом", coords: [48.7736, 44.8010], photos: ["images/kvadrat.jpg"] },
+            { city: "Волжский", name: "Спот на 10 ступенях", description: "Классический волжский спот — лестница из 10 ступеней.", coords: [48.77724, 44.79851], photos: ["images/10_stupeney.jpg"] },
+            { city: "Москва", name: "Красная площадь", description: "Главная площадь Москвы.", coords: [55.7539, 37.6208], photos: ["images/krasnaya.jpg"] },
+            { city: "Москва", name: "Парк Горького", description: "Большой парк с фонтанами.", coords: [55.7300, 37.6010], photos: ["images/park_gorkogo.jpg"] }
         ];
 
-        // ============================================================
-        // ПЕРЕМЕННЫЕ
-        // ============================================================
         let myMap;
         let placesData = [];
         let selectedCoords = null;
-        let currentPhotoData = null;
-        let deleteMode = false;
-        let editMode = false;
+        let currentPhotos = [];
+        let editingPhotos = [];
+        let deleteMode = false, editMode = false;
         let editingPlaceId = null;
         let selectedForDelete = new Set();
         let isDevUnlocked = false;
+        let firebaseReady = false;
 
-        // DOM
+        let currentSpot = null;
+        let currentPhotoIndex = 0;
+        let lightboxIndex = 0;
+
         const placesListEl = document.getElementById('places-list');
         const modal = document.getElementById('placeModal');
         const editModal = document.getElementById('editModal');
         const passwordModal = document.getElementById('passwordModal');
+        const spotModal = document.getElementById('spotModal');
         const devPanel = document.getElementById('dev-panel');
         const devToggleBtn = document.getElementById('dev-toggle-btn');
         const passwordInput = document.getElementById('passwordInput');
         const passwordError = document.getElementById('passwordError');
-
         const placeNameInput = document.getElementById('placeName');
         const placeDescInput = document.getElementById('placeDesc');
+        const placeCitySelect = document.getElementById('placeCity');
         const photoInput = document.getElementById('photoInput');
-        const photoPreview = document.getElementById('photoPreview');
-        const previewImg = document.getElementById('previewImg');
-
+        const photosPreview = document.getElementById('photosPreview');
         const editNameInput = document.getElementById('editPlaceName');
         const editDescInput = document.getElementById('editPlaceDesc');
+        const editCitySelect = document.getElementById('editPlaceCity');
+        const editPhotoInput = document.getElementById('editPhotoInput');
+        const editPhotosPreview = document.getElementById('editPhotosPreview');
 
-        // ============================================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ============================================================
         ymaps.ready(init);
+
         function init() {
             myMap = new ymaps.Map('map', {
-                center: [64.0, 87.0],
-                zoom: 4,
+                center: [58.0, 60.0], zoom: 4,
                 controls: ['zoomControl', 'fullscreenControl']
             });
 
-            myMap.events.add('click', function(e) {
-                if (deleteMode || editMode) {
-                    alert('Сначала выйди из режима редактирования/удаления (закрой панель разработчика)');
-                    return;
-                }
+            myMap.events.add('click', function (e) {
+                if (deleteMode || editMode) { alert('Выйди из режима редактирования'); return; }
                 selectedCoords = e.get('coords');
                 openModal();
             });
 
             loadPermanentPlaces();
-            loadFromStorage();
 
-            photoInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    currentPhotoData = ev.target.result;
-                    previewImg.src = currentPhotoData;
-                    photoPreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+            // Пробуем загрузить Firebase
+            waitForFirebase();
+
+            photoInput.addEventListener('change', function (e) {
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = ev => { currentPhotos.push(ev.target.result); renderPhotosPreview(); };
+                    reader.readAsDataURL(file);
+                });
+                photoInput.value = '';
             });
 
-            // ===== КНОПКА 🔧 — ОТКРЫВАЕТ ПАРОЛЬ =====
-            devToggleBtn.addEventListener('click', function() {
+            editPhotoInput.addEventListener('change', function (e) {
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = ev => { editingPhotos.push(ev.target.result); renderEditPhotosPreview(); };
+                    reader.readAsDataURL(file);
+                });
+                editPhotoInput.value = '';
+            });
+
+            devToggleBtn.addEventListener('click', function () {
                 if (isDevUnlocked) {
                     devPanel.classList.toggle('active');
-                    if (!devPanel.classList.contains('active')) {
-                        exitDeleteMode();
-                        exitEditMode();
-                        updateDevButtons();
-                    }
-                } else {
-                    openPasswordModal();
-                }
+                    if (!devPanel.classList.contains('active')) { exitDeleteMode(); exitEditMode(); }
+                } else { openPasswordModal(); }
             });
 
-            passwordInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') checkPassword();
+            passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+
+            document.getElementById('dev-close-btn').addEventListener('click', () => {
+                devPanel.classList.remove('active'); exitDeleteMode(); exitEditMode();
             });
 
-            // ===== КНОПКИ ПАНЕЛИ =====
-            document.getElementById('dev-close-btn').addEventListener('click', function() {
-                devPanel.classList.remove('active');
-                exitDeleteMode();
-                exitEditMode();
-                updateDevButtons();
-            });
-
-            document.getElementById('dev-delete-btn').addEventListener('click', function() {
+            document.getElementById('dev-delete-btn').addEventListener('click', () => {
                 if (!isDevUnlocked) return;
                 if (editMode) exitEditMode();
                 deleteMode = !deleteMode;
                 if (deleteMode) {
                     selectedForDelete.clear();
-                    alert('🔴 Режим удаления ВКЛЮЧЁН\n\nКликай по местам в списке, чтобы отметить их.\nПотом нажми "Удалить" ещё раз.');
-                } else {
-                    if (selectedForDelete.size > 0) {
-                        confirmDeleteSelected();
-                    } else {
-                        alert('Режим удаления ВЫКЛЮЧЕН');
-                    }
-                }
+                    alert('🔴 Режим удаления ВКЛЮЧЁН.\nКликай по спотам в списке, чтобы отметить.');
+                } else if (selectedForDelete.size > 0) { confirmDeleteSelected(); }
                 renderPlacesList();
-                updateDevButtons();
             });
 
-            document.getElementById('dev-edit-btn').addEventListener('click', function() {
+            document.getElementById('dev-edit-btn').addEventListener('click', () => {
                 if (!isDevUnlocked) return;
-                if (deleteMode) {
-                    exitDeleteMode();
-                }
+                if (deleteMode) exitDeleteMode();
                 editMode = !editMode;
-                if (editMode) {
-                    alert('✏️ Режим редактирования ВКЛЮЧЁН\n\nКликай по месту в списке, чтобы отредактировать.');
-                } else {
-                    alert('Режим редактирования ВЫКЛЮЧЕН');
-                }
+                alert(editMode ? '✏️ Режим редактирования ВКЛЮЧЁН.' : 'Режим редактирования ВЫКЛЮЧЕН');
                 renderPlacesList();
-                updateDevButtons();
             });
 
-            document.getElementById('dev-clear-btn').addEventListener('click', function() {
+            document.getElementById('dev-clear-btn').addEventListener('click', () => {
                 if (!isDevUnlocked) return;
-                if (placesData.length === 0) {
-                    alert('Нет мест для удаления.');
-                    return;
-                }
-                const permanentCount = placesData.filter(p => p.permanent).length;
                 const userCount = placesData.filter(p => !p.permanent).length;
-                
-                if (userCount === 0) {
-                    alert('Нет пользовательских мест для удаления. Постоянные места удалить нельзя.');
-                    return;
-                }
-
-                if (confirm(`⚠️ Удалить ВСЕ ${userCount} пользовательских мест?\n\nПостоянные места (${permanentCount} шт.) останутся.`)) {
+                if (userCount === 0) { alert('Нет пользовательских мест.'); return; }
+                if (confirm(`Удалить ВСЕ ${userCount} пользовательских мест?`)) {
+                    // Удаляем из Firebase
+                    if (firebaseReady && window.fb) {
+                        const placesRef = window.fb.ref(window.fb.db, 'places');
+                        window.fb.set(placesRef, null);
+                    }
+                    // Удаляем локально
                     placesData = placesData.filter(p => p.permanent);
                     myMap.geoObjects.removeAll();
                     placesData.forEach(p => createPlacemark(p));
                     renderPlacesList();
-                    saveToStorage();
-                    alert('✅ Все пользовательские места удалены!');
                 }
             });
 
-            console.log('✅ Карта готова! Пароль: MAMAS');
+            spotModal.addEventListener('click', e => { if (e.target === spotModal) closeSpotModal(); });
+        }
+
+        // Ждём загрузки Firebase (module script загружается асинхронно)
+        function waitForFirebase() {
+            let attempts = 0;
+            const check = setInterval(() => {
+                attempts++;
+                if (window.fb) {
+                    clearInterval(check);
+                    firebaseReady = true;
+                    loadFromFirebase();
+                    console.log('🔥 Firebase готов, слушаем изменения');
+                } else if (attempts > 50) {
+                    clearInterval(check);
+                    console.warn('⚠️ Firebase не загрузился, работаем локально');
+                    loadFromLocalStorage();
+                }
+            }, 100);
+        }
+
+        // ============================================================
+        // ЗАГРУЗКА ИЗ FIREBASE (реальное время)
+        // ============================================================
+        function loadFromFirebase() {
+            const placesRef = window.fb.ref(window.fb.db, 'places');
+
+            window.fb.onValue(placesRef, (snapshot) => {
+                const data = snapshot.val() || {};
+
+                // Удаляем все НЕ постоянные места из массива
+                placesData = placesData.filter(p => p.permanent);
+
+                // Очищаем карту от НЕ постоянных меток, оставляя постоянные
+                const permanentPlacemarks = placesData.map(p => p._placemark).filter(Boolean);
+                myMap.geoObjects.removeAll();
+                permanentPlacemarks.forEach(pm => myMap.geoObjects.add(pm));
+
+                // Добавляем места из Firebase
+                Object.keys(data).forEach(key => {
+                    const placeData = data[key];
+                    const place = {
+                        id: parseInt(key) || Date.now() + Math.random() * 1000,
+                        city: placeData.city || 'Другой',
+                        name: placeData.name,
+                        description: placeData.description || 'Без описания',
+                        coords: placeData.coords,
+                        photos: placeData.photos || [],
+                        _placemark: null,
+                        permanent: false
+                    };
+                    placesData.push(place);
+                    createPlacemark(place);
+                });
+
+                renderPlacesList();
+                console.log(`🔥 Загружено ${Object.keys(data).length} спотов из Firebase`);
+            });
+        }
+
+        // ============================================================
+        // ЗАГРУЗКА ИЗ LOCALSTORAGE (резерв)
+        // ============================================================
+        function loadFromLocalStorage() {
+            const raw = localStorage.getItem('myPlaces');
+            if (!raw) return;
+            try {
+                const saved = JSON.parse(raw);
+                saved.forEach(data => {
+                    const exists = placesData.some(p =>
+                        p.coords[0] === data.coords[0] && p.coords[1] === data.coords[1]);
+                    if (!exists) {
+                        const place = { ...data, city: data.city || 'Другой', photos: data.photos || [], _placemark: null, permanent: false };
+                        placesData.push(place);
+                        createPlacemark(place);
+                    }
+                });
+                renderPlacesList();
+            } catch (e) { console.warn(e); }
+        }
+
+        // ============================================================
+        // ПРЕВЬЮ ФОТО
+        // ============================================================
+        function renderPhotosPreview() {
+            photosPreview.innerHTML = '';
+            currentPhotos.forEach((photo, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'photo-thumb';
+                thumb.innerHTML = `<img src="${photo}"><button class="remove-photo" data-index="${index}">×</button>`;
+                thumb.querySelector('.remove-photo').addEventListener('click', e => {
+                    e.stopPropagation();
+                    currentPhotos.splice(index, 1);
+                    renderPhotosPreview();
+                });
+                photosPreview.appendChild(thumb);
+            });
+        }
+
+        function renderEditPhotosPreview() {
+            editPhotosPreview.innerHTML = '';
+            editingPhotos.forEach((photo, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'photo-thumb';
+                thumb.innerHTML = `<img src="${photo}"><button class="remove-photo" data-index="${index}">×</button>`;
+                thumb.querySelector('.remove-photo').addEventListener('click', e => {
+                    e.stopPropagation();
+                    editingPhotos.splice(index, 1);
+                    renderEditPhotosPreview();
+                });
+                editPhotosPreview.appendChild(thumb);
+            });
         }
 
         // ============================================================
@@ -650,20 +1175,16 @@
             passwordModal.classList.add('active');
             setTimeout(() => passwordInput.focus(), 100);
         }
-
         function closePasswordModal() {
             passwordModal.classList.remove('active');
             passwordError.classList.remove('show');
         }
-
         function checkPassword() {
-            const entered = passwordInput.value.trim();
-            if (entered === DEV_PASSWORD) {
+            if (passwordInput.value.trim() === DEV_PASSWORD) {
                 isDevUnlocked = true;
                 closePasswordModal();
                 devPanel.classList.add('active');
-                alert('🔓 Панель разработчика разблокирована!');
-                updateDevButtons();
+                alert('🔓 Панель разблокирована!');
             } else {
                 passwordError.classList.add('show');
                 passwordInput.value = '';
@@ -671,61 +1192,21 @@
             }
         }
 
-        passwordModal.addEventListener('click', function(e) {
-            if (e.target === passwordModal) closePasswordModal();
-        });
-
-        // ============================================================
-        // ОБНОВЛЕНИЕ КНОПОК
-        // ============================================================
-        function updateDevButtons() {
-            const deleteBtn = document.getElementById('dev-delete-btn');
-            const editBtn = document.getElementById('dev-edit-btn');
-            
-            if (!isDevUnlocked) {
-                deleteBtn.classList.add('dev-locked');
-                editBtn.classList.add('dev-locked');
-                deleteBtn.textContent = '🗑️ Удалить 🔒';
-                editBtn.textContent = '✏️ Редактировать 🔒';
-                return;
-            }
-            
-            deleteBtn.classList.remove('dev-locked');
-            editBtn.classList.remove('dev-locked');
-            
-            if (deleteMode) {
-                deleteBtn.textContent = `✅ Удалить (${selectedForDelete.size})`;
-                deleteBtn.style.background = '#e74c3c';
-            } else {
-                deleteBtn.textContent = '🗑️ Удалить';
-                deleteBtn.style.background = '#e74c3c';
-            }
-            
-            if (editMode) {
-                editBtn.textContent = '✏️ Редактировать (вкл)';
-                editBtn.style.background = '#f39c12';
-            } else {
-                editBtn.textContent = '✏️ Редактировать';
-                editBtn.style.background = '#f39c12';
-            }
-        }
-
         // ============================================================
         // ЗАГРУЗКА ПОСТОЯННЫХ МЕСТ
         // ============================================================
         function loadPermanentPlaces() {
-            PERMANENT_PLACES.forEach(placeData => {
-                const exists = placesData.some(p => 
-                    p.coords[0] === placeData.coords[0] && 
-                    p.coords[1] === placeData.coords[1]
-                );
+            PERMANENT_PLACES.forEach(data => {
+                const exists = placesData.some(p =>
+                    p.coords[0] === data.coords[0] && p.coords[1] === data.coords[1]);
                 if (!exists) {
                     const place = {
                         id: Date.now() + Math.random() * 1000,
-                        name: placeData.name,
-                        description: placeData.description || 'Без описания',
-                        coords: placeData.coords,
-                        photo: placeData.photo || null,
+                        city: data.city || 'Другой',
+                        name: data.name,
+                        description: data.description || 'Без описания',
+                        coords: data.coords,
+                        photos: data.photos || [],
                         _placemark: null,
                         permanent: true
                     };
@@ -743,74 +1224,101 @@
             placeNameInput.value = '';
             placeDescInput.value = '';
             photoInput.value = '';
-            currentPhotoData = null;
-            photoPreview.style.display = 'none';
-            previewImg.src = '#';
+            currentPhotos = [];
+            photosPreview.innerHTML = '';
+            placeCitySelect.value = 'Волжский';
             modal.classList.add('active');
         }
-
         function closeModal() {
             modal.classList.remove('active');
             selectedCoords = null;
         }
-
         function closeEditModal() {
             editModal.classList.remove('active');
             editingPlaceId = null;
+            editingPhotos = [];
+            editPhotosPreview.innerHTML = '';
             exitEditMode();
         }
 
         // ============================================================
-        // СОХРАНЕНИЕ
+        // СОХРАНЕНИЕ МЕСТА — в Firebase!
         // ============================================================
         function savePlace() {
             const name = placeNameInput.value.trim();
-            const desc = placeDescInput.value.trim();
-            if (!name) {
-                alert('Пожалуйста, введите название места.');
-                return;
-            }
-            if (!selectedCoords) {
-                alert('Сначала кликните на карту, чтобы выбрать место.');
-                return;
-            }
+            if (!name) { alert('Введите название'); return; }
+            if (!selectedCoords) { alert('Кликните по карте'); return; }
 
             const newPlace = {
                 id: Date.now(),
+                city: placeCitySelect.value,
                 name: name,
-                description: desc || 'Без описания',
+                description: placeDescInput.value.trim() || 'Без описания',
                 coords: selectedCoords,
-                photo: currentPhotoData || null,
+                photos: currentPhotos.slice(),
                 permanent: false
             };
 
-            placesData.push(newPlace);
-            createPlacemark(newPlace);
-            renderPlacesList();
-            saveToStorage();
+            // Сохраняем в Firebase
+            if (firebaseReady && window.fb) {
+                const placeRef = window.fb.ref(window.fb.db, 'places/' + newPlace.id);
+                window.fb.set(placeRef, {
+                    city: newPlace.city,
+                    name: newPlace.name,
+                    description: newPlace.description,
+                    coords: newPlace.coords,
+                    photos: newPlace.photos
+                });
+                console.log('✅ Спот отправлен в Firebase');
+            } else {
+                // Резерв — localStorage
+                placesData.push(newPlace);
+                createPlacemark(newPlace);
+                renderPlacesList();
+                saveToLocalStorage();
+                console.warn('⚠️ Firebase не готов, сохранили локально');
+            }
+
             closeModal();
         }
 
+        function saveToLocalStorage() {
+            const dataToSave = placesData.filter(p => !p.permanent).map(p => ({
+                id: p.id, city: p.city, name: p.name, description: p.description,
+                coords: p.coords, photos: p.photos || []
+            }));
+            localStorage.setItem('myPlaces', JSON.stringify(dataToSave));
+        }
+
         // ============================================================
-        // МЕТКИ
+        // СОЗДАНИЕ МЕТКИ
         // ============================================================
         function createPlacemark(place) {
+            const previewPhoto = place.photos && place.photos.length > 0
+                ? `<img class="preview-photo" src="${place.photos[0]}">`
+                : `<div class="no-photo">📷</div>`;
+
+            const photoCountText = place.photos && place.photos.length > 1
+                ? ` · 📷 ${place.photos.length} фото` : '';
+
+            const balloonHtml = `
+                <div class="place-preview">
+                    ${previewPhoto}
+                    <div class="city-tag">🏙️ ${place.city || 'Другой'}</div>
+                    <h2>${place.name}</h2>
+                    <div class="desc">${place.description}</div>
+                    <div class="coords-line">📍 ${place.coords[0].toFixed(5)}, ${place.coords[1].toFixed(5)}${photoCountText}</div>
+                    <button class="btn-more" onclick="openSpotModal(${place.id})">📖 Подробнее</button>
+                </div>
+            `;
+
             const placemark = new ymaps.Placemark(place.coords, {
-                balloonContent: `
-                    <div style="max-width:260px;">
-                        <h3 style="margin:0 0 8px 0; color:#1a1a1a;">${place.name}</h3>
-                        ${place.photo ? `<img src="${place.photo}" style="width:100%; max-height:150px; object-fit:cover; border-radius:8px; margin-bottom:8px;">` : ''}
-                        <p style="margin:4px 0; font-size:14px; color:#333;">${place.description}</p>
-                        <p style="margin:8px 0 0 0; font-size:11px; color:#888;">
-                            📍 ${place.coords[0].toFixed(5)}, ${place.coords[1].toFixed(5)}
-                        </p>
-                        ${place.permanent ? '<p style="margin-top:6px; font-size:10px; color:#27ae60;">🔒 Постоянное место</p>' : ''}
-                    </div>
-                `,
-                hintContent: place.name
+                balloonContent: balloonHtml,
+                hintContent: `${place.city || ''}: ${place.name}`
             }, {
                 preset: place.permanent ? 'islands#greenDotIconWithCaption' : 'islands#redDotIconWithCaption',
-                iconCaption: place.name
+                iconCaption: place.name,
+                balloonMaxWidth: 320
             });
 
             myMap.geoObjects.add(placemark);
@@ -818,107 +1326,215 @@
         }
 
         // ============================================================
-        // СПИСОК
+        // БОЛЬШОЕ ОКНО СПОТА
+        // ============================================================
+        window.openSpotModal = function (placeId) {
+            const place = placesData.find(p => p.id === placeId);
+            if (!place) return;
+
+            currentSpot = place;
+            currentPhotoIndex = 0;
+            document.getElementById('spotTitle').textContent = place.name;
+
+            const gallery = document.getElementById('spotGallery');
+            if (place.photos && place.photos.length > 0) {
+                gallery.innerHTML = `
+                    <img id="spotMainImg" src="${place.photos[0]}" onclick="openLightbox(${currentPhotoIndex})">
+                    ${place.photos.length > 1 ? `
+                        <button class="nav-btn nav-prev" onclick="spotNav(-1)">‹</button>
+                        <button class="nav-btn nav-next" onclick="spotNav(1)">›</button>
+                        <div class="counter"><span id="spotCounter">1</span> / ${place.photos.length}</div>
+                    ` : ''}
+                `;
+            } else {
+                gallery.innerHTML = `<div class="no-photo-big">📷</div>`;
+            }
+
+            const info = document.getElementById('spotInfo');
+            const photosCount = place.photos ? place.photos.length : 0;
+            info.innerHTML = `
+                <h3>🏙️ ${place.city || 'Другой'}</h3>
+                <div class="info-row"><strong>📝 Описание:</strong><br><div class="full-desc">${place.description}</div></div>
+                <div class="info-row"><strong>📍 Координаты:</strong><br>${place.coords[0].toFixed(6)}, ${place.coords[1].toFixed(6)}</div>
+                ${photosCount > 0 ? `<div class="info-row"><strong>📷 Фотографий:</strong> ${photosCount}</div>` : ''}
+                ${place.permanent ? `<div class="info-row" style="color:#27ae60;">🔒 Постоянное место</div>` : ''}
+            `;
+            spotModal.classList.add('active');
+        };
+
+        window.closeSpotModal = function () {
+            spotModal.classList.remove('active');
+            currentSpot = null;
+            currentPhotoIndex = 0;
+        };
+
+        window.spotNav = function (direction) {
+            if (!currentSpot || !currentSpot.photos || currentSpot.photos.length < 2) return;
+            currentPhotoIndex = (currentPhotoIndex + direction + currentSpot.photos.length) % currentSpot.photos.length;
+            const img = document.getElementById('spotMainImg');
+            if (img) img.src = currentSpot.photos[currentPhotoIndex];
+            const counter = document.getElementById('spotCounter');
+            if (counter) counter.textContent = currentPhotoIndex + 1;
+        };
+
+        // ============================================================
+        // ЛАЙТБОКС
+        // ============================================================
+        window.openLightbox = function (index) {
+            if (!currentSpot || !currentSpot.photos || currentSpot.photos.length === 0) return;
+            lightboxIndex = index;
+            updateLightbox();
+            document.getElementById('lightbox').classList.add('active');
+        };
+        window.closeLightbox = function () {
+            document.getElementById('lightbox').classList.remove('active');
+        };
+        window.lightboxNav = function (direction) {
+            if (!currentSpot || !currentSpot.photos) return;
+            lightboxIndex = (lightboxIndex + direction + currentSpot.photos.length) % currentSpot.photos.length;
+            updateLightbox();
+        };
+        function updateLightbox() {
+            const img = document.getElementById('lightboxImg');
+            img.src = currentSpot.photos[lightboxIndex];
+            img.style.transform = 'scale(1)';
+            document.getElementById('lightboxCounter').textContent = (lightboxIndex + 1) + ' / ' + currentSpot.photos.length;
+        }
+        document.getElementById('lightboxImg').addEventListener('click', function () {
+            const currentScale = this.style.transform.includes('scale(2)') ? 2 : 1;
+            this.style.transform = currentScale === 2 ? 'scale(1)' : 'scale(2)';
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (document.getElementById('lightbox').classList.contains('active')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') lightboxNav(-1);
+                if (e.key === 'ArrowRight') lightboxNav(1);
+                return;
+            }
+            if (spotModal.classList.contains('active')) {
+                if (e.key === 'Escape') closeSpotModal();
+                if (e.key === 'ArrowLeft') spotNav(-1);
+                if (e.key === 'ArrowRight') spotNav(1);
+            }
+        });
+
+        // ============================================================
+        // СПИСОК С ГОРОДАМИ
         // ============================================================
         function renderPlacesList() {
             placesListEl.innerHTML = '';
-            if (placesData.length === 0) {
-                placesListEl.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Пока нет мест. Нажмите "Добавить место" или кликните по карте.</div>';
+            if (placesData.length === 0 && KNOWN_CITIES.length === 0) {
+                placesListEl.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">Пока нет мест.</div>';
                 return;
             }
 
-            const sorted = [...placesData].reverse();
-            sorted.forEach(place => {
-                const item = document.createElement('div');
-                item.className = 'place-item';
-                if (place.permanent) item.style.borderLeftColor = '#27ae60';
-
-                if (deleteMode && !place.permanent && isDevUnlocked) {
-                    item.classList.add('select-mode');
-                    item.dataset.placeId = place.id;
-                    const checkMark = document.createElement('span');
-                    checkMark.className = 'delete-check';
-                    checkMark.textContent = '✅';
-                    item.appendChild(checkMark);
-                }
-
-                if (editMode && !place.permanent && isDevUnlocked) {
-                    item.style.border = '3px dashed #f39c12';
-                    item.style.cursor = 'pointer';
-                }
-
-                if (selectedForDelete.has(place.id)) {
-                    item.classList.add('selected-for-delete');
-                }
-
-                item.innerHTML = `
-                    <h4>${place.name} ${place.permanent ? '🔒' : ''}</h4>
-                    <p>${place.description}</p>
-                    <div class="coords">${place.coords[0].toFixed(4)}, ${place.coords[1].toFixed(4)}</div>
-                `;
-
-                item.addEventListener('click', function(e) {
-                    if (deleteMode && !place.permanent && isDevUnlocked) {
-                        e.stopPropagation();
-                        toggleSelectForDelete(place.id);
-                        return;
-                    }
-                    if (editMode && !place.permanent && isDevUnlocked) {
-                        e.stopPropagation();
-                        openEditModal(place);
-                        return;
-                    }
-                    if (place._placemark) {
-                        myMap.setCenter(place.coords, 12, {
-                            duration: 500,
-                            checkZoomRange: true
-                        });
-                        place._placemark.balloon.open();
-                    }
-                });
-
-                placesListEl.appendChild(item);
+            const grouped = {};
+            KNOWN_CITIES.forEach(city => { grouped[city] = []; });
+            placesData.forEach(place => {
+                const city = place.city || 'Другой';
+                if (!grouped[city]) grouped[city] = [];
+                grouped[city].push(place);
             });
-            updateDevButtons();
+
+            const cityKeys = Object.keys(grouped).sort((a, b) => {
+                const ia = KNOWN_CITIES.indexOf(a);
+                const ib = KNOWN_CITIES.indexOf(b);
+                if (ia === -1 && ib === -1) return a.localeCompare(b);
+                if (ia === -1) return 1;
+                if (ib === -1) return -1;
+                return ia - ib;
+            });
+
+            const cityIcons = {
+                'Волжский': '🏙️', 'Москва': '🏛️', 'Санкт-Петербург': '🌉',
+                'Казань': '🕌', 'Сочи': '🌴', 'Другой': '📍'
+            };
+
+            cityKeys.forEach(cityName => {
+                const spots = grouped[cityName];
+                const cityGroup = document.createElement('div');
+                cityGroup.className = 'city-group';
+                cityGroup.dataset.city = cityName;
+
+                const icon = cityIcons[cityName] || '📍';
+                const header = document.createElement('div');
+                header.className = 'city-header';
+                header.innerHTML = `
+                    <span class="arrow">▼</span>
+                    <span class="city-icon">${icon}</span>
+                    <span class="city-name">${cityName}</span>
+                    <span class="city-count">${spots.length}</span>
+                `;
+                header.addEventListener('click', () => { cityGroup.classList.toggle('collapsed'); });
+                cityGroup.appendChild(header);
+
+                const spotsContainer = document.createElement('div');
+                spotsContainer.className = 'city-spots';
+
+                if (spots.length === 0) {
+                    spotsContainer.innerHTML = '<div class="empty-city">Нет спотов</div>';
+                } else {
+                    spots.forEach(place => {
+                        const item = document.createElement('div');
+                        item.className = 'place-item';
+                        if (place.permanent) item.style.borderLeftColor = '#27ae60';
+                        if (selectedForDelete.has(place.id)) item.style.opacity = '0.5';
+
+                        item.innerHTML = `
+                            <h4>${place.name} ${place.permanent ? '🔒' : ''}</h4>
+                            <p>${place.description}</p>
+                            <div class="coords">${place.coords[0].toFixed(4)}, ${place.coords[1].toFixed(4)}${place.photos && place.photos.length ? ' · 📷 ' + place.photos.length : ''}</div>
+                        `;
+
+                        item.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            if (deleteMode && !place.permanent && isDevUnlocked) {
+                                if (selectedForDelete.has(place.id)) selectedForDelete.delete(place.id);
+                                else selectedForDelete.add(place.id);
+                                renderPlacesList();
+                                return;
+                            }
+                            if (editMode && !place.permanent && isDevUnlocked) { openEditModal(place); return; }
+                            if (place._placemark) {
+                                myMap.setCenter(place.coords, 15, { duration: 500, checkZoomRange: true });
+                                place._placemark.balloon.open();
+                            }
+                        });
+
+                        spotsContainer.appendChild(item);
+                    });
+                }
+                cityGroup.appendChild(spotsContainer);
+                placesListEl.appendChild(cityGroup);
+            });
         }
 
         // ============================================================
-        // УДАЛЕНИЕ
+        // УДАЛЕНИЕ — тоже из Firebase!
         // ============================================================
-        function toggleSelectForDelete(placeId) {
-            if (selectedForDelete.has(placeId)) {
-                selectedForDelete.delete(placeId);
-            } else {
-                selectedForDelete.add(placeId);
-            }
-            renderPlacesList();
-            updateDevButtons();
-        }
-
         function confirmDeleteSelected() {
-            if (selectedForDelete.size === 0) {
-                alert('Выбери места для удаления (кликни по ним).');
-                return;
-            }
-            if (!confirm(`Удалить ${selectedForDelete.size} место(а)?`)) return;
-
+            if (!confirm(`Удалить ${selectedForDelete.size} спот(а)?`)) return;
             const toRemove = new Set(selectedForDelete);
             selectedForDelete.clear();
-            placesData = placesData.filter(p => !toRemove.has(p.id));
-            myMap.geoObjects.removeAll();
-            placesData.forEach(p => createPlacemark(p));
-            renderPlacesList();
-            saveToStorage();
-            exitDeleteMode();
-            alert('✅ Места удалены!');
-        }
 
-        function exitDeleteMode() {
-            deleteMode = false;
-            selectedForDelete.clear();
-            renderPlacesList();
-            updateDevButtons();
+            // Удаляем из Firebase
+            if (firebaseReady && window.fb) {
+                toRemove.forEach(id => {
+                    const placeRef = window.fb.ref(window.fb.db, 'places/' + id);
+                    window.fb.remove(placeRef);
+                });
+            } else {
+                // Резерв — удаляем локально
+                placesData = placesData.filter(p => !toRemove.has(p.id));
+                myMap.geoObjects.removeAll();
+                placesData.forEach(p => createPlacemark(p));
+                renderPlacesList();
+                saveToLocalStorage();
+            }
+            exitDeleteMode();
         }
+        function exitDeleteMode() { deleteMode = false; selectedForDelete.clear(); renderPlacesList(); }
 
         // ============================================================
         // РЕДАКТИРОВАНИЕ
@@ -927,115 +1543,60 @@
             editingPlaceId = place.id;
             editNameInput.value = place.name;
             editDescInput.value = place.description;
+            editCitySelect.value = place.city || 'Другой';
+            editingPhotos = (place.photos || []).slice();
+            renderEditPhotosPreview();
             editModal.classList.add('active');
         }
-
         function saveEditPlace() {
             const name = editNameInput.value.trim();
-            const desc = editDescInput.value.trim();
-            if (!name) {
-                alert('Введите название.');
-                return;
-            }
-
+            if (!name) { alert('Введите название'); return; }
             const place = placesData.find(p => p.id === editingPlaceId);
-            if (!place) {
-                alert('Место не найдено.');
-                return;
-            }
+            if (!place) return;
 
-            place.name = name;
-            place.description = desc || 'Без описания';
-            myMap.geoObjects.remove(place._placemark);
-            createPlacemark(place);
-            renderPlacesList();
-            saveToStorage();
-            closeEditModal();
-            alert('✅ Место обновлено!');
-        }
-
-        function exitEditMode() {
-            editMode = false;
-            editingPlaceId = null;
-            renderPlacesList();
-            updateDevButtons();
-        }
-
-        // ============================================================
-        // LOCALSTORAGE
-        // ============================================================
-        function saveToStorage() {
-            const dataToSave = placesData
-                .filter(p => !p.permanent)
-                .map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    description: p.description,
-                    coords: p.coords,
-                    photo: p.photo
-                }));
-            localStorage.setItem('myPlaces', JSON.stringify(dataToSave));
-        }
-
-        function loadFromStorage() {
-            const raw = localStorage.getItem('myPlaces');
-            if (!raw) return;
-            try {
-                const saved = JSON.parse(raw);
-                saved.forEach(placeData => {
-                    const exists = placesData.some(p => 
-                        p.coords[0] === placeData.coords[0] && 
-                        p.coords[1] === placeData.coords[1]
-                    );
-                    if (!exists) {
-                        const place = {
-                            ...placeData,
-                            _placemark: null,
-                            permanent: false
-                        };
-                        placesData.push(place);
-                        createPlacemark(place);
-                    }
+            // Обновляем в Firebase
+            if (firebaseReady && window.fb) {
+                const placeRef = window.fb.ref(window.fb.db, 'places/' + place.id);
+                window.fb.set(placeRef, {
+                    city: editCitySelect.value,
+                    name: name,
+                    description: editDescInput.value.trim() || 'Без описания',
+                    coords: place.coords,
+                    photos: editingPhotos.slice()
                 });
+            } else {
+                // Резерв — локально
+                place.name = name;
+                place.description = editDescInput.value.trim() || 'Без описания';
+                place.city = editCitySelect.value;
+                place.photos = editingPhotos.slice();
+                myMap.geoObjects.remove(place._placemark);
+                createPlacemark(place);
                 renderPlacesList();
-            } catch(e) {
-                console.warn('Ошибка загрузки сохранённых мест', e);
+                saveToLocalStorage();
             }
+            closeEditModal();
         }
+        function exitEditMode() { editMode = false; editingPlaceId = null; renderPlacesList(); }
 
         // ============================================================
-        // ОБРАБОТЧИКИ
+        // ОБРАБОТЧИКИ КНОПОК
         // ============================================================
-        document.getElementById('add-btn').addEventListener('click', function() {
-            if (deleteMode || editMode) {
-                alert('Сначала выйди из режима редактирования/удаления');
-                return;
-            }
-            if (!myMap) {
-                alert('Карта ещё не загружена');
-                return;
-            }
+        document.getElementById('add-btn').addEventListener('click', () => {
+            if (deleteMode || editMode) { alert('Выйди из режима редактирования'); return; }
             selectedCoords = myMap.getCenter();
             openModal();
         });
 
-        document.getElementById('volzhsky-btn').addEventListener('click', function() {
+        document.getElementById('volzhsky-btn').addEventListener('click', () => {
             const coords = [48.7867, 44.7477];
-            myMap.setCenter(coords, 15, { duration: 1000, checkZoomRange: true });
-            const placemark = new ymaps.Placemark(coords, {
-                balloonContent: '<b>🏙️ Волжский</b><br>Волгоградская область'
-            });
-            myMap.geoObjects.add(placemark);
+            myMap.setCenter(coords, 13, { duration: 1000, checkZoomRange: true });
         });
 
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeModal();
-        });
-        editModal.addEventListener('click', function(e) {
-            if (e.target === editModal) closeEditModal();
-        });
-
-        console.log('✅ Карта готова! Пароль: MAMAS');
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal(); });
+        passwordModal.addEventListener('click', e => { if (e.target === passwordModal) closePasswordModal(); });
     </script>
 </body>
+
 </html>
