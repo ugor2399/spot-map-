@@ -575,7 +575,6 @@ function renderPlacesList() {
         return;
     }
 
-    // Группируем: сначала все известные города (даже пустые), потом споты
     const grouped = {};
     KNOWN_CITIES.forEach(city => {
         grouped[city] = [];
@@ -586,7 +585,6 @@ function renderPlacesList() {
         grouped[city].push(place);
     });
 
-    // Сортировка городов
     const cityKeys = Object.keys(grouped).sort((a, b) => {
         const ia = KNOWN_CITIES.indexOf(a);
         const ib = KNOWN_CITIES.indexOf(b);
@@ -596,7 +594,6 @@ function renderPlacesList() {
         return ia - ib;
     });
 
-    // Рендер каждого города
     cityKeys.forEach(cityName => {
         const spots = grouped[cityName];
         const cityGroup = document.createElement('div');
@@ -726,71 +723,35 @@ function exitEditMode() {
 }
 
 // ============================================================
-// LOCALSTORAGE
+// СОХРАНЕНИЕ (FIREBASE + LOCALSTORAGE как резерв)
 // ============================================================
 function saveToStorage() {
-    const dataToSave = placesData.filter(p => !p.permanent).map(p => ({
-        id: p.id,
-        city: p.city,
-        name: p.name,
-        description: p.description,
-        coords: p.coords,
-        photos: p.photos || []
-    }));
-    localStorage.setItem('myPlaces', JSON.stringify(dataToSave));
-}
-
-function loadFromStorage() {
-    const raw = localStorage.getItem('myPlaces');
-    if (!raw) return;
-    try {
-        const saved = JSON.parse(raw);
-        saved.forEach(data => {
-            const exists = placesData.some(p =>
-                p.coords[0] === data.coords[0] && p.coords[1] === data.coords[1]
-            );
-            if (!exists) {
-                const place = {
-                    ...data,
-                    city: data.city || 'Другой',
-                    photos: data.photos || [],
-                    _placemark: null,
-                    permanent: false
-                };
-                placesData.push(place);
-                createPlacemark(place);
-            }
-        });
-        renderPlacesList();
-    } catch (e) {
-        console.warn(e);
-    }
-}
-
-// ============================================================
-// ОБРАБОТЧИКИ КНОПОК
-// ============================================================
-document.getElementById('add-btn').addEventListener('click', () => {
-    if (deleteMode || editMode) {
-        alert('Выйди из режима редактирования');
+    // Если Firebase не подключён — сохраняем в localStorage
+    if (!window.fbDB) {
+        console.warn('Firebase не подключён — сохраняем локально');
+        const dataToSave = placesData.filter(p => !p.permanent).map(p => ({
+            id: p.id, city: p.city, name: p.name, description: p.description,
+            coords: p.coords, photos: p.photos || []
+        }));
+        localStorage.setItem('myPlaces', JSON.stringify(dataToSave));
         return;
     }
-    selectedCoords = myMap.getCenter();
-    openModal();
-});
 
-document.getElementById('volzhsky-btn').addEventListener('click', () => {
-    const coords = [48.7867, 44.7477];
-    myMap.setCenter(coords, 13, { duration: 1000, checkZoomRange: true });
-});
+    // Сохраняем ВСЕ пользовательские места в Firebase
+    const dataToSave = {};
+    placesData.filter(p => !p.permanent).forEach(p => {
+        dataToSave[p.id] = {
+            city: p.city,
+            name: p.name,
+            description: p.description,
+            coords: p.coords,
+            photos: p.photos || []
+        };
+    });
 
-// Клик по фону модалок — закрытие
-modal.addEventListener('click', e => {
-    if (e.target === modal) closeModal();
-});
-editModal.addEventListener('click', e => {
-    if (e.target === editModal) closeEditModal();
-});
-passwordModal.addEventListener('click', e => {
-    if (e.target === passwordModal) closePasswordModal();
-});
+    const placesRef = window.fbRef(window.fbDB, 'places');
+    window.fbSet(placesRef, dataToSave);
+}
+
+// ============================================================
+// ЗАГРУЗКА (FIREBASE
