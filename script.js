@@ -1,11 +1,9 @@
 // ============================================================
-// 🔑 ПАРОЛЬ РАЗРАБОТЧИКА
+// КОНСТАНТЫ
 // ============================================================
 const DEV_PASSWORD = 'MAMAS';
 
-// ============================================================
-// СПИСОК ГОРОДОВ (которые всегда показываем, даже если пустые)
-// ============================================================
+// Список городов (для сортировки в панели)
 const KNOWN_CITIES = [
     "Волжский",
     "Москва",
@@ -14,9 +12,7 @@ const KNOWN_CITIES = [
     "Сочи"
 ];
 
-// ============================================================
-// ИКОНКИ ДЛЯ ГОРОДОВ
-// ============================================================
+// Иконки городов
 const CITY_ICONS = {
     'Волжский': '🏙️',
     'Москва': '🏛️',
@@ -27,43 +23,32 @@ const CITY_ICONS = {
 };
 
 // ============================================================
-// ПОСТОЯННЫЕ МЕСТА (с полем city)
+// ПОСТОЯННЫЕ МЕСТА (прописаны в коде — не пропадают)
 // ============================================================
 const PERMANENT_PLACES = [
-    // ============ ВОЛЖСКИЙ ============
+    // Волжский
     {
         city: "Волжский",
         name: "Спот на БирМастер",
         description: "Спот в стили КК, можно залезть на крышу с боку здания. Могут быстро прогнать.",
         coords: [48.7850, 44.7828],
-        photos: [
-            "images/BirMaster1.jpg",
-            "images/BirMaster2.jpg",
-            "images/BirMaster3.jpg"
-        ]
+        photos: []
     },
     {
         city: "Волжский",
         name: "Квадрат",
         description: "Квадрат менул перед дом с гисомом",
         coords: [48.7736, 44.8010],
-        photos: [
-            "images/Kvadrat1.jpg",
-            "images/Kvadrat2.jpg"
-        ]
+        photos: []
     },
     {
         city: "Волжский",
         name: "Спот на 10 ступенях",
         description: "Классический волжский спот — лестница из 10 ступеней. Отличное место для трюков.",
         coords: [48.77724, 44.79851],
-        photos: [
-            "images/tenStairs1.jpg",
-            "images/tenStairs2.jpg",
-            "images/tenStairs3.jpg"
-        ]
+        photos: []
     },
-    // ============ МОСКВА ============
+    // Москва
     {
         city: "Москва",
         name: "Красная площадь",
@@ -88,7 +73,8 @@ let placesData = [];
 let selectedCoords = null;
 let currentPhotos = [];
 let editingPhotos = [];
-let deleteMode = false, editMode = false;
+let deleteMode = false;
+let editMode = false;
 let editingPlaceId = null;
 let selectedForDelete = new Set();
 let isDevUnlocked = false;
@@ -97,9 +83,7 @@ let currentSpot = null;
 let currentPhotoIndex = 0;
 let lightboxIndex = 0;
 
-// ============================================================
-// DOM-ЭЛЕМЕНТЫ
-// ============================================================
+// DOM-элементы
 const placesListEl = document.getElementById('places-list');
 const modal = document.getElementById('placeModal');
 const editModal = document.getElementById('editModal');
@@ -120,11 +104,15 @@ const editCitySelect = document.getElementById('editPlaceCity');
 const editPhotoInput = document.getElementById('editPhotoInput');
 const editPhotosPreview = document.getElementById('editPhotosPreview');
 
+// Сайдбар
+const sidebar = document.getElementById('sidebar');
+const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+
 // ============================================================
-// ИНИЦИАЛИЗАЦИЯ
+// ИНИЦИАЛИЗАЦИЯ КАРТЫ
 // ============================================================
 ymaps.ready(init);
-
 function init() {
     myMap = new ymaps.Map('map', {
         center: [58.0, 60.0],
@@ -132,7 +120,7 @@ function init() {
         controls: ['zoomControl', 'fullscreenControl']
     });
 
-    myMap.events.add('click', function (e) {
+    myMap.events.add('click', function(e) {
         if (deleteMode || editMode) {
             alert('Выйди из режима редактирования');
             return;
@@ -144,8 +132,8 @@ function init() {
     loadPermanentPlaces();
     loadFromStorage();
 
-    // ===== ЗАГРУЗКА ФОТО =====
-    photoInput.addEventListener('change', function (e) {
+    // Загрузка фото при создании
+    photoInput.addEventListener('change', function(e) {
         Array.from(e.target.files).forEach(file => {
             const reader = new FileReader();
             reader.onload = ev => {
@@ -157,7 +145,8 @@ function init() {
         photoInput.value = '';
     });
 
-    editPhotoInput.addEventListener('change', function (e) {
+    // Загрузка фото при редактировании
+    editPhotoInput.addEventListener('change', function(e) {
         Array.from(e.target.files).forEach(file => {
             const reader = new FileReader();
             reader.onload = ev => {
@@ -169,8 +158,8 @@ function init() {
         editPhotoInput.value = '';
     });
 
-    // ===== КНОПКА DEV =====
-    devToggleBtn.addEventListener('click', function () {
+    // Кнопка DEV
+    devToggleBtn.addEventListener('click', function() {
         if (isDevUnlocked) {
             devPanel.classList.toggle('active');
             if (!devPanel.classList.contains('active')) {
@@ -182,16 +171,19 @@ function init() {
         }
     });
 
+    // Enter в поле пароля
     passwordInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') checkPassword();
     });
 
+    // Закрыть панель разработчика
     document.getElementById('dev-close-btn').addEventListener('click', () => {
         devPanel.classList.remove('active');
         exitDeleteMode();
         exitEditMode();
     });
 
+    // Кнопка "Удалить" в панели
     document.getElementById('dev-delete-btn').addEventListener('click', () => {
         if (!isDevUnlocked) return;
         if (editMode) exitEditMode();
@@ -205,6 +197,7 @@ function init() {
         renderPlacesList();
     });
 
+    // Кнопка "Редактировать" в панели
     document.getElementById('dev-edit-btn').addEventListener('click', () => {
         if (!isDevUnlocked) return;
         if (deleteMode) exitDeleteMode();
@@ -213,6 +206,7 @@ function init() {
         renderPlacesList();
     });
 
+    // Кнопка "Очистить всё"
     document.getElementById('dev-clear-btn').addEventListener('click', () => {
         if (!isDevUnlocked) return;
         const userCount = placesData.filter(p => !p.permanent).length;
@@ -229,8 +223,34 @@ function init() {
         }
     });
 
+    // Закрытие большого окна по клику на фон
     spotModal.addEventListener('click', e => {
         if (e.target === spotModal) closeSpotModal();
+    });
+
+    // ============================================================
+    // УПРАВЛЕНИЕ САЙДБАРОМ НА ТЕЛЕФОНЕ
+    // ============================================================
+    if (sidebarCloseBtn) {
+        sidebarCloseBtn.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('hidden');
+            }
+        });
+    }
+
+    if (toggleSidebarBtn) {
+        toggleSidebarBtn.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('hidden');
+            }
+        });
+    }
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('hidden');
+        }
     });
 }
 
@@ -379,7 +399,7 @@ function savePlace() {
 }
 
 // ============================================================
-// СОЗДАНИЕ МЕТКИ
+// СОЗДАНИЕ МЕТКИ С ПРЕВЬЮ
 // ============================================================
 function createPlacemark(place) {
     const previewPhoto = place.photos && place.photos.length > 0
@@ -421,7 +441,7 @@ function createPlacemark(place) {
 // ============================================================
 // БОЛЬШОЕ ОКНО СПОТА
 // ============================================================
-window.openSpotModal = function (placeId) {
+window.openSpotModal = function(placeId) {
     const place = placesData.find(p => p.id === placeId);
     if (!place) return;
 
@@ -471,13 +491,13 @@ window.openSpotModal = function (placeId) {
     spotModal.classList.add('active');
 };
 
-window.closeSpotModal = function () {
+window.closeSpotModal = function() {
     spotModal.classList.remove('active');
     currentSpot = null;
     currentPhotoIndex = 0;
 };
 
-window.spotNav = function (direction) {
+window.spotNav = function(direction) {
     if (!currentSpot || !currentSpot.photos || currentSpot.photos.length < 2) return;
     currentPhotoIndex = (currentPhotoIndex + direction + currentSpot.photos.length) % currentSpot.photos.length;
     const img = document.getElementById('spotMainImg');
@@ -489,18 +509,18 @@ window.spotNav = function (direction) {
 // ============================================================
 // ЛАЙТБОКС
 // ============================================================
-window.openLightbox = function (index) {
+window.openLightbox = function(index) {
     if (!currentSpot || !currentSpot.photos || currentSpot.photos.length === 0) return;
     lightboxIndex = index;
     updateLightbox();
     document.getElementById('lightbox').classList.add('active');
 };
 
-window.closeLightbox = function () {
+window.closeLightbox = function() {
     document.getElementById('lightbox').classList.remove('active');
 };
 
-window.lightboxNav = function (direction) {
+window.lightboxNav = function(direction) {
     if (!currentSpot || !currentSpot.photos) return;
     lightboxIndex = (lightboxIndex + direction + currentSpot.photos.length) % currentSpot.photos.length;
     updateLightbox();
@@ -514,12 +534,13 @@ function updateLightbox() {
         (lightboxIndex + 1) + ' / ' + currentSpot.photos.length;
 }
 
-document.getElementById('lightboxImg').addEventListener('click', function () {
+document.getElementById('lightboxImg').addEventListener('click', function() {
     const currentScale = this.style.transform.includes('scale(2)') ? 2 : 1;
     this.style.transform = currentScale === 2 ? 'scale(1)' : 'scale(2)';
 });
 
-document.addEventListener('keydown', function (e) {
+// Клавиатура
+document.addEventListener('keydown', function(e) {
     if (document.getElementById('lightbox').classList.contains('active')) {
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') lightboxNav(-1);
@@ -534,7 +555,7 @@ document.addEventListener('keydown', function (e) {
 });
 
 // ============================================================
-// СПИСОК С ГОРОДАМИ
+// СПИСОК С ГОРОДАМИ И СПОТАМИ
 // ============================================================
 function renderPlacesList() {
     placesListEl.innerHTML = '';
@@ -546,14 +567,16 @@ function renderPlacesList() {
 
     // Группируем: сначала все известные города (даже пустые), потом споты
     const grouped = {};
-    KNOWN_CITIES.forEach(city => { grouped[city] = []; });
+    KNOWN_CITIES.forEach(city => {
+        grouped[city] = [];
+    });
     placesData.forEach(place => {
         const city = place.city || 'Другой';
         if (!grouped[city]) grouped[city] = [];
         grouped[city].push(place);
     });
 
-    // Порядок городов
+    // Сортировка городов
     const cityKeys = Object.keys(grouped).sort((a, b) => {
         const ia = KNOWN_CITIES.indexOf(a);
         const ib = KNOWN_CITIES.indexOf(b);
@@ -563,7 +586,7 @@ function renderPlacesList() {
         return ia - ib;
     });
 
-    // Рендерим каждый город
+    // Рендер каждого города
     cityKeys.forEach(cityName => {
         const spots = grouped[cityName];
         const cityGroup = document.createElement('div');
@@ -606,7 +629,7 @@ function renderPlacesList() {
                     </div>
                 `;
 
-                item.addEventListener('click', function (e) {
+                item.addEventListener('click', function(e) {
                     e.stopPropagation();
                     if (deleteMode && !place.permanent && isDevUnlocked) {
                         if (selectedForDelete.has(place.id)) selectedForDelete.delete(place.id);
@@ -735,7 +758,7 @@ function loadFromStorage() {
 }
 
 // ============================================================
-// ОБРАБОТЧИКИ
+// ОБРАБОТЧИКИ КНОПОК
 // ============================================================
 document.getElementById('add-btn').addEventListener('click', () => {
     if (deleteMode || editMode) {
@@ -751,6 +774,7 @@ document.getElementById('volzhsky-btn').addEventListener('click', () => {
     myMap.setCenter(coords, 13, { duration: 1000, checkZoomRange: true });
 });
 
+// Клик по фону модалок — закрытие
 modal.addEventListener('click', e => {
     if (e.target === modal) closeModal();
 });
