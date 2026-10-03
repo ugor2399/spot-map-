@@ -33,9 +33,9 @@ const PERMANENT_PLACES = [
         description: "Спот в стили КК, можно залезть на крышу с боку здания. Могут быстро прогнать.",
         coords: [48.7850, 44.7828],
         photos: [
-            "spot-map-/images/BirMaster1.jpg",
-            "spot-map-/images/BirMaster2.jpg",
-            "spot-map-/images/BirMaster3.jpg"
+            "images/BirMaster1.jpg",
+            "images/BirMaster2.jpg",
+            "images/BirMaster3.jpg"
         ]
     },
     {
@@ -44,8 +44,8 @@ const PERMANENT_PLACES = [
         description: "Квадрат менул перед дом с гисомом",
         coords: [48.7736, 44.8010],
         photos: [
-            "spot-map-/images/Kvadrat1.jpg",
-            "spot-map-/images/Kvadrat2.jpg"
+            "images/Kvadrat1.jpg",
+            "images/Kvadrat2.jpg"
         ]
     },
     {
@@ -54,13 +54,11 @@ const PERMANENT_PLACES = [
         description: "Классический волжский спот — лестница из 10 ступеней. Отличное место для трюков.",
         coords: [48.77724, 44.79851],
         photos: [
-            "spot-map-/images/tenStairs1.jpg",
-            "spot-map-/images/tenStairs2.jpg",
-            "spot-map-/images/tenStairs3.jpg"
+            "images/tenStairs1.jpg",
+            "images/tenStairs2.jpg",
+            "images/tenStairs3.jpg"
         ]
     },
-
-    // ============ МОСКВА ============
     {
         city: "Москва",
         name: "Красная площадь",
