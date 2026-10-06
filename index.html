@@ -10,25 +10,28 @@
 
 <body>
 
+    <!-- Сайдбар -->
     <div id="sidebar">
         <div id="sidebar-header">
             <h2>📍 Мои места</h2>
             <small>Кликни на метку, чтобы открыть карточку</small>
             <button id="sidebar-close-btn" title="Закрыть">✖</button>
         </div>
-        <div id="controls">
-            <button id="toggle-sidebar-btn" title="Мои места">📍</button>
-            <button id="add-btn" title="Добавить место">➕</button>
-            <button id="volzhsky-btn" title="Волжский">🏙️</button>
+        <div id="dev-panel">
+            <span class="dev-label">🔧 DEV</span>
+            <button class="dev-delete-btn" id="dev-delete-btn">🗑️ Удалить</button>
+            <button class="dev-edit-btn" id="dev-edit-btn">✏️ Редактировать</button>
+            <button class="dev-clear-btn" id="dev-clear-btn">🧹 Очистить всё</button>
+            <button class="dev-close-btn" id="dev-close-btn">✖ Закрыть</button>
         </div>
         <div id="places-list"></div>
     </div>
 
+    <!-- Карта -->
     <div id="map-container">
         <div id="map"></div>
         <div id="controls">
             <button id="toggle-sidebar-btn" title="Мои места">📍</button>
-            <button id="dev-toggle-btn" title="Панель разработчика">🔧</button>
             <button id="add-btn" title="Добавить место">➕</button>
             <button id="volzhsky-btn" title="Волжский">🏙️</button>
         </div>
