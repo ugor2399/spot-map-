@@ -12,16 +12,6 @@ const KNOWN_CITIES = [
     "Сочи"
 ];
 
-// Иконки городов
-const CITY_ICONS = {
-    'Волжский': '🏙️',
-    'Москва': '🏛️',
-    'Санкт-Петербург': '🌉',
-    'Казань': '🕌',
-    'Сочи': '🌴',
-    'Другой': '📍'
-};
-
 // ============================================================
 // ПОСТОЯННЫЕ МЕСТА (прописаны в коде — не пропадают)
 // ============================================================
@@ -100,7 +90,6 @@ const editModal = document.getElementById('editModal');
 const passwordModal = document.getElementById('passwordModal');
 const spotModal = document.getElementById('spotModal');
 const devPanel = document.getElementById('dev-panel');
-const devToggleBtn = document.getElementById('dev-toggle-btn');
 const passwordInput = document.getElementById('passwordInput');
 const passwordError = document.getElementById('passwordError');
 const placeNameInput = document.getElementById('placeName');
@@ -120,6 +109,22 @@ const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
 const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
 
 // ============================================================
+// ОТКРЫТИЕ ПАНЕЛИ РАЗРАБОТЧИКА (только для ПК)
+// ============================================================
+function openDEVpanel() {
+    if (!isDevUnlocked) {
+        openPasswordModal();
+        return;
+    }
+
+    devPanel.classList.toggle('active');
+    if (!devPanel.classList.contains('active')) {
+        exitDeleteMode();
+        exitEditMode();
+    }
+}
+
+// ============================================================
 // ИНИЦИАЛИЗАЦИЯ КАРТЫ
 // ============================================================
 ymaps.ready(init);
@@ -130,7 +135,7 @@ function init() {
         controls: ['zoomControl', 'fullscreenControl']
     });
 
-    myMap.events.add('click', function(e) {
+    myMap.events.add('click', function (e) {
         if (deleteMode || editMode) {
             alert('Выйди из режима редактирования');
             return;
@@ -143,7 +148,7 @@ function init() {
     loadFromStorage();
 
     // Загрузка фото при создании
-    photoInput.addEventListener('change', function(e) {
+    photoInput.addEventListener('change', function (e) {
         Array.from(e.target.files).forEach(file => {
             const reader = new FileReader();
             reader.onload = ev => {
@@ -156,7 +161,7 @@ function init() {
     });
 
     // Загрузка фото при редактировании
-    editPhotoInput.addEventListener('change', function(e) {
+    editPhotoInput.addEventListener('change', function (e) {
         Array.from(e.target.files).forEach(file => {
             const reader = new FileReader();
             reader.onload = ev => {
@@ -166,19 +171,6 @@ function init() {
             reader.readAsDataURL(file);
         });
         editPhotoInput.value = '';
-    });
-
-    // Кнопка DEV
-    devToggleBtn.addEventListener('click', function() {
-        if (isDevUnlocked) {
-            devPanel.classList.toggle('active');
-            if (!devPanel.classList.contains('active')) {
-                exitDeleteMode();
-                exitEditMode();
-            }
-        } else {
-            openPasswordModal();
-        }
     });
 
     // Enter в поле пароля
@@ -242,7 +234,7 @@ function init() {
     // УПРАВЛЕНИЕ САЙДБАРОМ НА ТЕЛЕФОНЕ
     // ============================================================
     if (sidebarCloseBtn) {
-        sidebarCloseBtn.addEventListener('click', function() {
+        sidebarCloseBtn.addEventListener('click', function () {
             if (window.innerWidth <= 768) {
                 sidebar.classList.add('hidden');
             }
@@ -250,16 +242,26 @@ function init() {
     }
 
     if (toggleSidebarBtn) {
-        toggleSidebarBtn.addEventListener('click', function() {
+        toggleSidebarBtn.addEventListener('click', function () {
             if (window.innerWidth <= 768) {
                 sidebar.classList.toggle('hidden');
             }
         });
     }
 
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         if (window.innerWidth > 768) {
             sidebar.classList.remove('hidden');
+        }
+    });
+
+    // ============================================================
+    // СЕКРЕТНАЯ КОМБИНАЦИЯ ДЛЯ ПК: Ctrl + Shift + D
+    // ============================================================
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'd') {
+            e.preventDefault();
+            openDEVpanel();
         }
     });
 }
@@ -451,7 +453,7 @@ function createPlacemark(place) {
 // ============================================================
 // БОЛЬШОЕ ОКНО СПОТА
 // ============================================================
-window.openSpotModal = function(placeId) {
+window.openSpotModal = function (placeId) {
     const place = placesData.find(p => p.id === placeId);
     if (!place) return;
 
@@ -501,13 +503,13 @@ window.openSpotModal = function(placeId) {
     spotModal.classList.add('active');
 };
 
-window.closeSpotModal = function() {
+window.closeSpotModal = function () {
     spotModal.classList.remove('active');
     currentSpot = null;
     currentPhotoIndex = 0;
 };
 
-window.spotNav = function(direction) {
+window.spotNav = function (direction) {
     if (!currentSpot || !currentSpot.photos || currentSpot.photos.length < 2) return;
     currentPhotoIndex = (currentPhotoIndex + direction + currentSpot.photos.length) % currentSpot.photos.length;
     const img = document.getElementById('spotMainImg');
@@ -519,18 +521,18 @@ window.spotNav = function(direction) {
 // ============================================================
 // ЛАЙТБОКС
 // ============================================================
-window.openLightbox = function(index) {
+window.openLightbox = function (index) {
     if (!currentSpot || !currentSpot.photos || currentSpot.photos.length === 0) return;
     lightboxIndex = index;
     updateLightbox();
     document.getElementById('lightbox').classList.add('active');
 };
 
-window.closeLightbox = function() {
+window.closeLightbox = function () {
     document.getElementById('lightbox').classList.remove('active');
 };
 
-window.lightboxNav = function(direction) {
+window.lightboxNav = function (direction) {
     if (!currentSpot || !currentSpot.photos) return;
     lightboxIndex = (lightboxIndex + direction + currentSpot.photos.length) % currentSpot.photos.length;
     updateLightbox();
@@ -544,13 +546,13 @@ function updateLightbox() {
         (lightboxIndex + 1) + ' / ' + currentSpot.photos.length;
 }
 
-document.getElementById('lightboxImg').addEventListener('click', function() {
+document.getElementById('lightboxImg').addEventListener('click', function () {
     const currentScale = this.style.transform.includes('scale(2)') ? 2 : 1;
     this.style.transform = currentScale === 2 ? 'scale(1)' : 'scale(2)';
 });
 
 // Клавиатура
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (document.getElementById('lightbox').classList.contains('active')) {
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') lightboxNav(-1);
@@ -600,13 +602,10 @@ function renderPlacesList() {
         cityGroup.className = 'city-group';
         cityGroup.dataset.city = cityName;
 
-        const icon = CITY_ICONS[cityName] || '📍';
-
         const header = document.createElement('div');
         header.className = 'city-header';
         header.innerHTML = `
             <span class="arrow">▼</span>
-            <span class="city-icon">${icon}</span>
             <span class="city-name">${cityName}</span>
             <span class="city-count">${spots.length}</span>
         `;
@@ -636,7 +635,7 @@ function renderPlacesList() {
                     </div>
                 `;
 
-                item.addEventListener('click', function(e) {
+                item.addEventListener('click', function (e) {
                     e.stopPropagation();
                     if (deleteMode && !place.permanent && isDevUnlocked) {
                         if (selectedForDelete.has(place.id)) selectedForDelete.delete(place.id);
@@ -726,7 +725,6 @@ function exitEditMode() {
 // СОХРАНЕНИЕ (FIREBASE + LOCALSTORAGE как резерв)
 // ============================================================
 function saveToStorage() {
-    // Если Firebase не подключён — сохраняем в localStorage
     if (!window.fbDB) {
         console.warn('Firebase не подключён — сохраняем локально');
         const dataToSave = placesData.filter(p => !p.permanent).map(p => ({
@@ -737,7 +735,6 @@ function saveToStorage() {
         return;
     }
 
-    // Сохраняем ВСЕ пользовательские места в Firebase
     const dataToSave = {};
     placesData.filter(p => !p.permanent).forEach(p => {
         dataToSave[p.id] = {
@@ -757,7 +754,6 @@ function saveToStorage() {
 // ЗАГРУЗКА (FIREBASE + LOCALSTORAGE как резерв)
 // ============================================================
 function loadFromStorage() {
-    // Локальная загрузка (резерв)
     function loadLocal() {
         const raw = localStorage.getItem('myPlaces');
         if (!raw) return;
@@ -785,7 +781,6 @@ function loadFromStorage() {
         }
     }
 
-    // Ждём Firebase (он загружается через type="module" асинхронно)
     let attempts = 0;
     const waitFB = setInterval(() => {
         attempts++;
@@ -797,15 +792,12 @@ function loadFromStorage() {
             window.fbOnValue(placesRef, (snapshot) => {
                 const data = snapshot.val();
 
-                // Удаляем ВСЕ пользовательские места (они сейчас придут из Firebase)
                 placesData = placesData.filter(p => p.permanent);
 
-                // Чистим карту от пользовательских меток
                 const permanentPlacemarks = placesData.map(p => p._placemark).filter(Boolean);
                 myMap.geoObjects.removeAll();
                 permanentPlacemarks.forEach(pm => myMap.geoObjects.add(pm));
 
-                // Добавляем заново из Firebase
                 if (data) {
                     Object.keys(data).forEach(key => {
                         const d = data[key];

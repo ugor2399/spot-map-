@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Карта мест России</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div id="sidebar">
@@ -14,12 +16,10 @@
             <small>Кликни на метку, чтобы открыть карточку</small>
             <button id="sidebar-close-btn" title="Закрыть">✖</button>
         </div>
-        <div id="dev-panel">
-            <span class="dev-label">🔧 DEV</span>
-            <button class="dev-delete-btn" id="dev-delete-btn">🗑️ Удалить</button>
-            <button class="dev-edit-btn" id="dev-edit-btn">✏️ Редактировать</button>
-            <button class="dev-clear-btn" id="dev-clear-btn">🧹 Очистить всё</button>
-            <button class="dev-close-btn" id="dev-close-btn">✖ Закрыть</button>
+        <div id="controls">
+            <button id="toggle-sidebar-btn" title="Мои места">📍</button>
+            <button id="add-btn" title="Добавить место">➕</button>
+            <button id="volzhsky-btn" title="Волжский">🏙️</button>
         </div>
         <div id="places-list"></div>
     </div>
@@ -136,7 +136,8 @@
     </div>
 
     <!-- Яндекс.Карты API -->
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU" type="text/javascript"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=dd5dc019-ac88-481c-bfe2-e8867959dceb&lang=ru_RU"
+        type="text/javascript"></script>
 
     <!-- Firebase -->
     <script type="module">
@@ -167,4 +168,5 @@
     <!-- Твой скрипт -->
     <script src="script.js"></script>
 </body>
+
 </html>
